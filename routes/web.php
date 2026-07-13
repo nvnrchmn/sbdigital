@@ -26,6 +26,5 @@ Route::middleware(['auth', 'verified', 'role:Super Admin'])->prefix('superadmin'
 });
 
 Route::post('/webhook/logikraf', [\App\Http\Controllers\LogikrafWebhookController::class, 'handle']);
-Route::get('/api/deploy/{token}', [\App\Http\Controllers\DeploymentController::class, 'deploy']);
 
 require __DIR__.'/auth.php';

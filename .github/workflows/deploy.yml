@@ -9,6 +9,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Deployment Webhook
-        run: |
-          curl -sS -L -X GET "https://sbdigital.biz.id/api/deploy/${{ secrets.DEPLOY_TOKEN }}" -H "Accept: application/json" -H "User-Agent: GitHubActions/1.0"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd /home/sbdigita/domains/sbdigital.biz.id/laravel_core
+            bash deploy.sh
