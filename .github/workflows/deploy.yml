@@ -15,7 +15,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: ${{ secrets.SSH_PORT || 2222 }}
           script: |
             cd /home/sbdigita/domains/sbdigital.biz.id/laravel_core
             bash deploy.sh
