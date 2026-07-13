@@ -1,0 +1,18 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>SB Digital icon</title>
+<desc>Rounded square badge with a house outline and signal arcs, symbolizing a digital neighborhood management platform</desc>
+<defs>
+<linearGradient id="sbGrad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#31C3FF"/>
+<stop offset="100%" stop-color="#2A5DF9"/>
+</linearGradient>
+</defs>
+<rect x="0" y="0" width="200" height="200" rx="44" fill="url(#sbGrad)"/>
+<path d="M58,98 L100,58 L142,98" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="68" y="98" width="64" height="48" rx="6" fill="#FFFFFF"/>
+<rect x="92" y="118" width="16" height="28" rx="2" fill="#12172E"/>
+<path d="M160,34 A12,12 0 0,1 172,46" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+<path d="M152,34 A20,20 0 0,1 172,54" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+<path d="M144,34 A28,28 0 0,1 172,62" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
+<circle cx="172" cy="34" r="4" fill="#FFFFFF"/>
+</svg>

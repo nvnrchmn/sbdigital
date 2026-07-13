@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Livewire\Tenant\Keluhan;
+
+use App\Models\Keluhan;
+use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
+
+class Process extends Component
+{
+    public Keluhan $keluhan;
+    public $status = 'Diproses';
+    public $tanggapan_admin = '';
+
+    public function mount(Keluhan $keluhan)
+    {
+        $user = Auth::user();
+        if (!$user->can('process keluhan') && !$user->hasRole('Tenant Owner')) {
+            abort(403, 'Anda tidak memiliki akses memproses keluhan.');
+        }
+
+        $this->keluhan = $keluhan;
+        $this->status = $keluhan->status === 'Menunggu' ? 'Diproses' : $keluhan->status;
+        $this->tanggapan_admin = $keluhan->tanggapan_admin ?? '';
+    }
+
+    public function save()
+    {
+        $user = Auth::user();
+        if (!$user->can('process keluhan') && !$user->hasRole('Tenant Owner')) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $this->validate([
+            'status' => 'required|in:Menunggu,Diproses,Selesai,Ditolak',
+            'tanggapan_admin' => 'nullable|string|max:1000',
+        ]);
+
+        $this->keluhan->update([
+            'status' => $this->status,
+            'tanggapan_admin' => $this->tanggapan_admin,
+        ]);
+
+        $this->dispatch('notify', message: 'Tanggapan dan status keluhan berhasil diperbarui');
+        $this->dispatch('keluhanProcessed');
+        $this->dispatch('closeModal');
+    }
+
+    public function render()
+    {
+        return view('livewire.tenant.keluhan.process');
+    }
+}
