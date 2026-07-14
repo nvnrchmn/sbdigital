@@ -5,36 +5,44 @@
 <script>
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('swal:modal', (data) => {
+            let payload = Array.isArray(data) ? data[0] : data;
+            if (!payload) return;
             Swal.fire({
-                title: data[0].title,
-                text: data[0].text,
-                icon: data[0].icon,
+                title: payload.title,
+                text: payload.text,
+                icon: payload.icon,
                 confirmButtonColor: '#4f46e5',
             });
         });
-
+ 
         Livewire.on('notify', (data) => {
+            let payload = Array.isArray(data) ? data[0] : data;
+            if (!payload) return;
+            let title = typeof payload === 'string' ? payload : (payload.message || payload.title);
+            let icon = typeof payload === 'string' ? 'success' : (payload.icon || 'success');
             Swal.fire({
                 toast: true,
                 position: 'top-end',
-                icon: data[0].icon || 'success',
-                title: data[0].message,
+                icon: icon,
+                title: title,
                 showConfirmButton: false,
                 timer: 3000,
                 timerProgressBar: true,
             });
         });
-
+ 
         Livewire.on('swal:confirm', (data) => {
+            let payload = Array.isArray(data) ? data[0] : data;
+            if (!payload) return;
             Swal.fire({
-                title: data[0].title,
-                text: data[0].text,
-                icon: data[0].icon ?? 'warning',
+                title: payload.title,
+                text: payload.text,
+                icon: payload.icon ?? 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#94a3b8',
-                confirmButtonText: data[0].confirmText ?? 'Ya, Hapus!',
-                cancelButtonText: data[0].cancelText ?? 'Batal',
+                confirmButtonText: payload.confirmText ?? 'Ya, Hapus!',
+                cancelButtonText: payload.cancelText ?? 'Batal',
                 customClass: {
                     popup: 'rounded-2xl',
                     confirmButton: 'rounded-xl',
@@ -42,7 +50,7 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch(data[0].action, data[0].params ?? {});
+                    Livewire.dispatch(payload.action, payload.params ?? {});
                 }
             });
         });
