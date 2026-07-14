@@ -71,6 +71,9 @@ class Index extends Component
                     'external_id' => $invoice['external_id'] ?? $invoiceId,
                     'checkout_url' => $invoice['checkout_url']
                 ]);
+                
+                // Pindahkan pengguna (redirect) langsung ke halaman pembayaran Xendit
+                return redirect()->away($invoice['checkout_url']);
             } else {
                 // Mock for testing if Logikraf is not configured
                 $subscription->update([
