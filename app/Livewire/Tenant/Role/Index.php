@@ -14,6 +14,17 @@ class Index extends Component
 
     protected $listeners = ['roleSaved' => '$refresh'];
 
+    public function mount()
+    {
+        // FIX (P0 - Broken Access Control): sebelumnya halaman daftar user + role
+        // ini bisa diakses siapa saja yang login (termasuk warga biasa).
+        abort_unless(
+            auth()->user()->can('manage roles'),
+            403,
+            'Hanya Tenant Owner yang dapat mengakses manajemen role.'
+        );
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();

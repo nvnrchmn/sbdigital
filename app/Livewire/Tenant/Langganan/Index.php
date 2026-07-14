@@ -18,6 +18,8 @@ class Index extends Component
 
     public function mount()
     {
+        abort_unless(auth()->user()->hasRole('Tenant Owner'), 403, 'Akses ditolak.');
+
         $plan_id = tenant('plan_id');
         if ($plan_id) {
             // Need to get the Plan using the central connection

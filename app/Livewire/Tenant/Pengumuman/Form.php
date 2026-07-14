@@ -15,6 +15,14 @@ class Form extends Component
 
     public function mount($pengumuman = null)
     {
+        // FIX (P1 - Broken Access Control): sebelumnya tidak ada pengecekan role,
+        // warga biasa bisa membuat/mengedit pengumuman (risiko defacement/misinformasi).
+        abort_unless(
+            Auth::user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
+            403,
+            'Anda tidak memiliki akses untuk mengelola pengumuman.'
+        );
+
         if ($pengumuman) {
             $data = Pengumuman::findOrFail($pengumuman);
             $this->pengumumanId = $data->id;
@@ -26,6 +34,12 @@ class Form extends Component
 
     public function save()
     {
+        // FIX: cek ulang di save(), konsisten dengan pola di modul Iuran/Warga.
+        abort_unless(
+            Auth::user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
+            403
+        );
+
         $this->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',

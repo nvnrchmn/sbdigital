@@ -45,6 +45,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('create lapak') || auth()->user()->can('edit lapak'), 403, 'Akses ditolak.');
+
         $user = Auth::user();
         if (!$user->warga_id) {
             // Pengurus tanpa data warga cannot sell, unless they link their account

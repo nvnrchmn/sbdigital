@@ -13,6 +13,14 @@ class Form extends Component
 
     public function mount(Rumah $rumah = null)
     {
+        // FIX (P1 - Broken Access Control): sebelumnya tidak ada pengecekan role,
+        // warga biasa bisa create/edit data rumah.
+        abort_unless(
+            auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
+            403,
+            'Anda tidak memiliki akses untuk mengelola data rumah.'
+        );
+
         if ($rumah && $rumah->exists) {
             $this->rumah = $rumah;
             $this->nomor_blok = $rumah->nomor_blok;
@@ -22,6 +30,12 @@ class Form extends Component
 
     public function save()
     {
+        // FIX: cek ulang di save(), konsisten dengan pola di modul Iuran/Warga.
+        abort_unless(
+            auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
+            403
+        );
+
         $this->validate([
             'nomor_blok' => 'required|string|max:255|unique:rumah,nomor_blok' . ($this->rumah ? ',' . $this->rumah->id : ''),
             'keterangan' => 'nullable|string',

@@ -13,6 +13,8 @@ class Form extends Component
 
     public function mount(?\App\Models\GlobalAnnouncement $announcement = null)
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         if ($announcement && $announcement->exists) {
             $this->announcement = $announcement;
             $this->title = $announcement->title;
@@ -23,6 +25,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         $this->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',

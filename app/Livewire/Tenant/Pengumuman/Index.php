@@ -21,6 +21,8 @@ class Index extends Component
 
     public function delete($id)
     {
+        abort_unless(auth()->user()->can('delete pengumuman'), 403, 'Akses ditolak.');
+
         Pengumuman::findOrFail($id)->delete();
         $this->dispatch('notify', message: 'Pengumuman berhasil dihapus');
     }

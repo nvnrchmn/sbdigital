@@ -24,7 +24,7 @@ class Form extends Component
 
         if ($warga && $warga->exists) {
             $this->warga = $warga;
-            $this->nik = $warga->nik;
+            $this->nik = $warga->nik; // otomatis ter-decrypt via cast di Model
             $this->nama_lengkap = $warga->nama_lengkap;
             $this->id_rumah = $warga->id_rumah;
             $this->no_hp = $warga->no_hp;
@@ -38,17 +38,34 @@ class Form extends Component
             abort(403);
         }
 
+        // FIX (Fitur Enkripsi NIK): kolom `nik` sekarang terenkripsi (ciphertext beda
+        // setiap kali walau plaintext sama), jadi Laravel `unique:warga,nik` bawaan
+        // TIDAK BISA dipakai lagi. Uniqueness dicek manual lewat kolom `nik_hash`
+        // (HMAC deterministik dari NIK asli) setelah validasi format.
         $this->validate([
-            'nik' => 'required|string|max:255|unique:warga,nik' . ($this->warga ? ',' . $this->warga->id : ''),
+            'nik' => ['required', 'string', 'regex:/^\d{16}$/'], // NIK Indonesia = 16 digit angka
             'nama_lengkap' => 'required|string|max:255',
             'id_rumah' => 'required|exists:rumah,id',
             'no_hp' => 'nullable|string|max:255',
             'status_warga' => 'required|in:Tetap,Kontrak',
+        ], [
+            'nik.regex' => 'NIK harus terdiri dari 16 digit angka.',
         ]);
+
+        $nikHash = hash_hmac('sha256', $this->nik, config('app.key'));
+
+        $duplicateExists = Warga::where('nik_hash', $nikHash)
+            ->when($this->warga, fn ($q) => $q->where('id', '!=', $this->warga->id))
+            ->exists();
+
+        if ($duplicateExists) {
+            $this->addError('nik', 'NIK ini sudah terdaftar untuk warga lain.');
+            return;
+        }
 
         if ($this->warga) {
             $this->warga->update([
-                'nik' => $this->nik,
+                'nik' => $this->nik, // mutator di Model otomatis enkripsi + isi nik_hash
                 'nama_lengkap' => $this->nama_lengkap,
                 'id_rumah' => $this->id_rumah,
                 'no_hp' => $this->no_hp,
@@ -57,7 +74,7 @@ class Form extends Component
             $this->dispatch('notify', message: 'Data warga berhasil diubah');
         } else {
             Warga::create([
-                'nik' => $this->nik,
+                'nik' => $this->nik, // mutator di Model otomatis enkripsi + isi nik_hash
                 'nama_lengkap' => $this->nama_lengkap,
                 'id_rumah' => $this->id_rumah,
                 'no_hp' => $this->no_hp,

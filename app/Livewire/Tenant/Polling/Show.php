@@ -14,6 +14,8 @@ class Show extends Component
 
     public function mount(Poll $poll)
     {
+        abort_unless(auth()->user()->can('view polling'), 403, 'Akses ditolak.');
+
         $this->poll = $poll->load(['options', 'votes.warga', 'creator']);
     }
 

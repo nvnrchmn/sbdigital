@@ -19,6 +19,8 @@ class VerifyTenant extends Component
 
     public function mount($token)
     {
+        // Public endpoint, maybe? Or needs auth? If Central component is public, we skip. But Verify is usually public or uses token.
+
         $this->token = $token;
         $this->verify();
     }

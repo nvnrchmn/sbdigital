@@ -27,6 +27,8 @@ class Index extends Component
 
     public function mount()
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         // Load Logikraf
         $this->logikraf_api_key = Setting::get('logikraf_api_key');
         $this->logikraf_webhook_secret = Setting::get('logikraf_webhook_secret');

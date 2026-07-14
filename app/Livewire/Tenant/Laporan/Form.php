@@ -14,6 +14,8 @@ class Form extends Component
 
     public function mount(LaporanWarga $laporan = null)
     {
+        abort_unless(auth()->user()->can('create laporan') || auth()->user()->can('edit laporan'), 403, 'Akses ditolak.');
+
         if ($laporan && $laporan->exists) {
             $this->laporan = $laporan;
             $this->judul = $laporan->judul;
@@ -23,6 +25,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('create laporan') || auth()->user()->can('edit laporan'), 403, 'Akses ditolak.');
+
         $user = Auth::user();
 
         if (!$user->warga_id) {

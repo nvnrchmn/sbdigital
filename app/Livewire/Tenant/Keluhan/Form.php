@@ -52,6 +52,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('create keluhan') || auth()->user()->can('edit keluhan'), 403, 'Akses ditolak.');
+
         $user = Auth::user();
         if (!$user->warga_id) {
             abort(403, 'Anda harus melengkapi data warga Anda terlebih dahulu sebelum melapor.');

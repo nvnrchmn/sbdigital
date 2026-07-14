@@ -38,6 +38,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Bendahara']), 403, 'Akses ditolak.');
+
         $this->validate([
             'id_rumah' => 'required|exists:rumah,id',
             'bulan' => 'required|integer|min:1|max:12',

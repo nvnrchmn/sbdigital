@@ -16,6 +16,8 @@ class Index extends Component
 
     public function delete(Rumah $rumah)
     {
+        abort_unless(auth()->user()->can('delete rumah'), 403, 'Akses ditolak.');
+
         $rumah->delete();
         $this->dispatch('notify', message: 'Data rumah berhasil dihapus');
     }

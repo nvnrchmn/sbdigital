@@ -47,7 +47,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-slate-900 font-medium font-mono">{{ $warga->nik }}</div>
+                            <div class="text-sm text-slate-900 font-medium font-mono">{{ $warga->canBeViewedFullyBy(auth()->user()) ? $warga->nik : $warga->nik_masked }}</div>
                             <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                                 {{ $warga->no_hp ?: 'Tidak ada no HP' }}
@@ -127,7 +127,7 @@
                     <div class="grid grid-cols-2 gap-4 text-sm mb-4">
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
                             <span class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Nomor NIK</span>
-                            <span class="font-mono text-slate-800 font-medium">{{ $warga->nik }}</span>
+                            <span class="font-mono text-slate-800 font-medium">{{ $warga->canBeViewedFullyBy(auth()->user()) ? $warga->nik : $warga->nik_masked }}</span>
                         </div>
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
                             <span class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">No. Handphone</span>

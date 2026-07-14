@@ -16,6 +16,8 @@ class Form extends Component
 
     public function mount(?\App\Models\Plan $plan = null)
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         if ($plan && $plan->exists) {
             $this->plan = $plan;
             $this->name = $plan->name;
@@ -29,6 +31,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',

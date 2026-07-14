@@ -16,6 +16,8 @@ class Form extends Component
 
     public function mount(?\App\Models\Tenant $tenant = null)
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         if ($tenant && $tenant->exists) {
             $this->tenant = $tenant;
             $this->nama_perumahan = $tenant->nama_perumahan;
@@ -28,6 +30,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
+
         $this->validate([
             'nama_perumahan' => 'required|string|max:255',
             'domain' => 'required|string|max:50|alpha_dash|unique:tenants,id,' . ($this->tenant ? $this->tenant->id : ''),
