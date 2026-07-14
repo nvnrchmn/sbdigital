@@ -26,6 +26,7 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     # Jalankan skrip deployment utama
     bash deploy.sh --force >> "$LOG_FILE" 2>&1
 else
-    # Opsional: Bisa dikomentari jika log terlalu penuh
-    echo "Tidak ada perubahan di repositori." >> "$LOG_FILE"
+    # Dinonaktifkan agar file log tidak cepat penuh setiap menit
+    # echo "Tidak ada perubahan di repositori." >> "$LOG_FILE"
+    :
 fi
