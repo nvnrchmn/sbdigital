@@ -43,6 +43,7 @@ class Index extends Component
         $pendingSub = TenantSubscription::where('tenant_id', $tenantId)
                         ->where('plan_id', $plan->id)
                         ->where('status', 'Pending')
+                        ->where('checkout_url', '!=', '#')
                         ->first();
 
         if ($pendingSub) {
