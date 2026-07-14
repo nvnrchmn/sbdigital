@@ -64,7 +64,7 @@ class Index extends Component
             $description = "Langganan Paket {$plan->name} untuk Portal {$tenantId}";
 
             $logikraf = new LogikrafService();
-            $invoice = $logikraf->createMasterInvoice($invoiceId, $plan->price, $payerEmail, $description);
+            $invoice = $logikraf->createMasterInvoice($invoiceId, $tenantId, $plan->price, $payerEmail, $description);
 
             if ($invoice && isset($invoice['checkout_url'])) {
                 $subscription->update([

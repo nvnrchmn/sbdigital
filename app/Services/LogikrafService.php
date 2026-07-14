@@ -113,7 +113,7 @@ class LogikrafService
      * @param string $description
      * @return array|null
      */
-    public function createMasterInvoice(string $invoiceId, float $amount, string $payerEmail, string $description)
+    public function createMasterInvoice(string $invoiceId, string $tenantId, float $amount, string $payerEmail, string $description)
     {
         if (!$this->apiKey) {
             Log::warning('Logikraf API Key is missing. Skipping Master Invoice creation.');
@@ -127,6 +127,7 @@ class LogikrafService
                 'Content-Type' => 'application/json',
             ])->post("{$this->baseUrl}/invoices", [
                 'external_id' => $invoiceId,
+                'external_reference_id' => $tenantId,
                 'amount' => $amount,
                 'payer_email' => $payerEmail,
                 'description' => $description,
