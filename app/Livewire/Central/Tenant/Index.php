@@ -43,6 +43,9 @@ class Index extends Component
                 }
             }
 
+            // Hapus riwayat registrasinya agar nama ini bisa digunakan/didaftar ulang
+            \App\Models\TenantRegistration::where('tenant_id', $tenant->id)->delete();
+
             $tenant->delete();
             $this->dispatch('swal:modal', [
                 'title' => 'Berhasil!',
