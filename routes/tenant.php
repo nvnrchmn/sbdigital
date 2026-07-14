@@ -24,6 +24,17 @@ Route::middleware([
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
 
+    // ROUTE SEMENTARA UNTUK TEST SETTING DI TENANT
+    Route::get('/test-tenant-settings', function () {
+        return [
+            'tenant_id' => tenant('id'),
+            'central_connection_config' => config('tenancy.database.central_connection'),
+            'default_connection_config' => config('database.default'),
+            'central_sub_account_id' => \App\Models\Setting::get('logikraf_central_sub_account_id', 'FALLBACK_NOT_FOUND'),
+            'api_key' => substr(\App\Models\Setting::get('logikraf_api_key', 'NOT_FOUND'), 0, 10) . '...'
+        ];
+    });
+
     Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
         ->middleware(['auth', 'verified'])
         ->name('tenant.dashboard');
