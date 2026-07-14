@@ -55,6 +55,12 @@ Route::middleware([
         ];
     });
 
+    // ROUTE SEMENTARA UNTUK MEMBERSIHKAN TAGIHAN GAGAL
+    Route::get('/clean-subscriptions', function () {
+        \App\Models\TenantSubscription::where('status', 'Pending')->delete();
+        return "Berhasil menghapus seluruh tagihan Pending yang gagal. Silakan buka halaman langganan tenant Anda kembali.";
+    });
+
     Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
         ->middleware(['auth', 'verified'])
         ->name('tenant.dashboard');
