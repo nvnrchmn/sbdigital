@@ -4,21 +4,28 @@
 # Skrip Pemicu Deployment via Cron Job Lokal (Bypass Firewall/SSH Block)
 # ==============================================================================
 
+# 1. Pastikan PATH memuat binary standar (git, php, dll)
+export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+
 TARGET_DIR="/home/sbdigita/domains/sbdigital.biz.id/laravel_core"
-cd "$TARGET_DIR" || { echo "Error: Gagal masuk ke direktori $TARGET_DIR"; exit 1; }
+LOG_FILE="$TARGET_DIR/storage/logs/deploy.log"
 
-# Ambil update terbaru dari GitHub secara pasif
-git fetch origin main
+echo "=== Cron Job berjalan pada $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$LOG_FILE"
 
-# Bandingkan commit lokal dengan remote
+cd "$TARGET_DIR" || { echo "Error: Gagal masuk ke direktori $TARGET_DIR" >> "$LOG_FILE"; exit 1; }
+
+# Ambil update terbaru dari GitHub secara pasif, kirim output ke log
+git fetch origin main >> "$LOG_FILE" 2>&1
+
+# Bandingkan commit lokal dengan remote branch secara eksplisit
 LOCAL=$(git rev-parse HEAD)
-REMOTE=$(git rev-parse @{u})
+REMOTE=$(git rev-parse origin/main)
 
 if [ "$LOCAL" != "$REMOTE" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Perubahan terdeteksi. Memulai deployment..."
+    echo "Perubahan terdeteksi. Memulai deployment..." >> "$LOG_FILE"
     # Jalankan skrip deployment utama
-    bash deploy.sh --force
+    bash deploy.sh --force >> "$LOG_FILE" 2>&1
 else
     # Opsional: Bisa dikomentari jika log terlalu penuh
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Tidak ada perubahan di repositori."
+    echo "Tidak ada perubahan di repositori." >> "$LOG_FILE"
 fi

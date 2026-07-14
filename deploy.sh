@@ -5,6 +5,7 @@
 # ==============================================================================
 
 # 1. Konfigurasi Path & Binary (Sesuaikan jika hosting membutuhkan path absolut)
+export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 PHP_BIN="php"
 COMPOSER_BIN="composer"
 NPM_BIN="npm"
