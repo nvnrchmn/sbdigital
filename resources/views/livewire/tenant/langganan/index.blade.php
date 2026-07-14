@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto" x-data="{}" x-on:redirect-external.window="window.location.href = (Array.isArray($event.detail) ? $event.detail[0].url : $event.detail.url)">
+<div class="max-w-7xl mx-auto">
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-2xl font-bold text-slate-800">Informasi Langganan</h2>
