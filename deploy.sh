@@ -85,22 +85,23 @@ main() {
         # 8. Install & Build Asset Vite (UI/UX)
         echo "Memeriksa ketersediaan Node.js/NPM untuk build UI..."
         
-        # Smart NPM Locator (Mencari npm di path standar & custom cPanel/DirectAdmin)
+        # Smart NPM Locator (Mencari npm, diprioritaskan versi tertinggi/terbaru)
         if ! command -v $NPM_BIN &> /dev/null; then
+            # Menggunakan ls -vr (version sort reverse) agar nodejs20, 22 terpilih duluan daripada 10
+            CLOUDLINUX_NPM=$(ls -vr /opt/alt/alt-nodejs*/root/usr/bin/npm 2>/dev/null)
+            NVM_NPM=$(ls -vr $HOME/.nvm/versions/node/*/bin/npm 2>/dev/null)
+            
             POSSIBLE_NPM_PATHS=(
-                "$HOME/.nvm/versions/node/*/bin/npm"
-                "/opt/alt/alt-nodejs*/root/usr/bin/npm"
+                $CLOUDLINUX_NPM
+                $NVM_NPM
                 "$HOME/bin/npm"
                 "$HOME/.local/bin/npm"
             )
-            for path_pattern in "${POSSIBLE_NPM_PATHS[@]}"; do
-                # Expansion bash untuk pola asterisk
-                for found_path in $path_pattern; do
-                    if [ -x "$found_path" ]; then
-                        NPM_BIN="$found_path"
-                        break 2
-                    fi
-                done
+            for found_path in "${POSSIBLE_NPM_PATHS[@]}"; do
+                if [ -x "$found_path" ]; then
+                    NPM_BIN="$found_path"
+                    break
+                fi
             done
         fi
 
