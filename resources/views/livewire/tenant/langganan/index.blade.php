@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto" @if($subscriptions->where('status', 'Pending')->count() > 0) wire:poll.3s @endif>
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-2xl font-bold text-slate-800">Informasi Langganan</h2>

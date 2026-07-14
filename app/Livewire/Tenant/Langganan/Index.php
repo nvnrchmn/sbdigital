@@ -132,6 +132,13 @@ class Index extends Component
     public function render()
     {
         $tenantId = tenant('id');
+
+        // Fetch the latest tenant from the database in case it was updated by the webhook
+        $tenant = \App\Models\Tenant::find($tenantId);
+        if ($tenant && $tenant->plan_id) {
+            $this->plan = Plan::find($tenant->plan_id);
+        }
+
         $allPlans = Plan::orderBy('price')->get();
         $subscriptions = TenantSubscription::where('tenant_id', $tenantId)
                             ->with('plan')
