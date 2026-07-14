@@ -83,13 +83,13 @@ class Index extends Component
                     'response' => $invoice
                 ]);
 
-                if ($invoice && isset($invoice['checkout_url'])) {
+                if ($invoice && isset($invoice['data']['checkout_url'])) {
                     $subscription->update([
-                        'external_id' => $invoice['external_id'] ?? $invoiceId,
-                        'checkout_url' => $invoice['checkout_url']
+                        'external_id' => $invoice['data']['transaction']['external_id'] ?? $invoiceId,
+                        'checkout_url' => $invoice['data']['checkout_url']
                     ]);
                     
-                    $this->redirectUrl = $invoice['checkout_url'];
+                    $this->redirectUrl = $invoice['data']['checkout_url'];
                     return;
                 } else {
                     // Mock for testing if Logikraf is not configured

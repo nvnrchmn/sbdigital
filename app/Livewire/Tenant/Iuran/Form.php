@@ -79,10 +79,10 @@ class Form extends Component
                 $logikraf = new \App\Services\LogikrafService();
                 $invoice = $logikraf->createInvoice($invoiceId, $tenantId, $this->nominal, $payerEmail, $description);
 
-                if ($invoice && isset($invoice['checkout_url'])) {
+                if ($invoice && isset($invoice['data']['checkout_url'])) {
                     $iuran->update([
-                        'external_id' => $invoice['external_id'] ?? $invoiceId,
-                        'checkout_url' => $invoice['checkout_url']
+                        'external_id' => $invoice['data']['transaction']['external_id'] ?? $invoiceId,
+                        'checkout_url' => $invoice['data']['checkout_url']
                     ]);
                 }
             }
