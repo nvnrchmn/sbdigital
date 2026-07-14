@@ -65,7 +65,20 @@ class Index extends Component
             $description = "Langganan Paket {$plan->name} untuk Portal {$tenantId}";
 
             $logikraf = new LogikrafService();
+            
+            Log::info('Livewire Langganan: Mengirim request createMasterInvoice', [
+                'invoice_id' => $invoiceId,
+                'tenant_id' => $tenantId,
+                'price' => $plan->price,
+                'payer_email' => $payerEmail,
+                'description' => $description
+            ]);
+
             $invoice = $logikraf->createMasterInvoice($invoiceId, $tenantId, $plan->price, $payerEmail, $description);
+
+            Log::info('Livewire Langganan: Respon createMasterInvoice', [
+                'response' => $invoice
+            ]);
 
             if ($invoice && isset($invoice['checkout_url'])) {
                 $subscription->update([
