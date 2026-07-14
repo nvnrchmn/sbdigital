@@ -82,38 +82,10 @@ main() {
         echo "Menjalankan migrasi database tenant..."
         $PHP_BIN artisan tenants:migrate
 
-        # 8. Install & Build Asset Vite (UI/UX)
-        echo "Memeriksa ketersediaan Node.js/NPM untuk build UI..."
-        
-        # Smart NPM Locator (Mencari npm, diprioritaskan versi tertinggi/terbaru)
-        if ! command -v $NPM_BIN &> /dev/null; then
-            # Menggunakan ls -vr (version sort reverse) agar nodejs20, 22 terpilih duluan daripada 10
-            CLOUDLINUX_NPM=$(ls -vr /opt/alt/alt-nodejs*/root/usr/bin/npm 2>/dev/null)
-            NVM_NPM=$(ls -vr $HOME/.nvm/versions/node/*/bin/npm 2>/dev/null)
-            
-            POSSIBLE_NPM_PATHS=(
-                $CLOUDLINUX_NPM
-                $NVM_NPM
-                "$HOME/bin/npm"
-                "$HOME/.local/bin/npm"
-            )
-            for found_path in "${POSSIBLE_NPM_PATHS[@]}"; do
-                if [ -x "$found_path" ]; then
-                    NPM_BIN="$found_path"
-                    break
-                fi
-            done
-        fi
+        # 8. Proses Build Frontend (Dihapus)
+        # Sesuai konfigurasi terbaru, folder public/build kini di-build di lokal komputer
+        # dan di-push ke GitHub, sehingga server tidak perlu lagi mem-build ulang.
 
-        if command -v $NPM_BIN &> /dev/null || [ -x "$NPM_BIN" ]; then
-            echo "NPM ditemukan di: $NPM_BIN. Memulai build assets frontend..."
-            # Gunakan install biasa jika ci gagal (beberapa struktur package-lock berbeda lokal/server)
-            $NPM_BIN install --no-audit --no-fund || echo "Warning: npm install ada kendala, mencoba lanjut..."
-            $NPM_BIN run build
-        else
-            echo "Peringatan: npm tidak ditemukan di server (bahkan di path tersembunyi)."
-            echo "Solusi alternatif: Build UI (npm run build) di lokal komputer Anda, lalu hapus folder 'public/build' dari .gitignore agar ikut ter-push ke GitHub."
-        fi
 
         # 9. Optimasi Cache untuk Produksi
         echo "Mengoptimalkan cache aplikasi..."
