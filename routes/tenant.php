@@ -35,6 +35,25 @@ Route::middleware([
         ];
     });
 
+    // ROUTE SEMENTARA UNTUK SIMULASI MASTER INVOICE DI TENANT
+    Route::get('/test-tenant-subscribe', function () {
+        $tenantId = tenant('id');
+        $invoiceId = "INV-SUB-TTEST-" . time();
+        $amount = 100000;
+        $payerEmail = "nv.nrchmn@gmail.com";
+        $description = "Langganan Paket Premium untuk Portal {$tenantId}";
+
+        $logikraf = new \App\Services\LogikrafService();
+        $invoice = $logikraf->createMasterInvoice($invoiceId, $tenantId, $amount, $payerEmail, $description);
+
+        return [
+            'tenant_id' => $tenantId,
+            'invoice_id' => $invoiceId,
+            'central_sub_account_id' => \App\Models\Setting::get('logikraf_central_sub_account_id'),
+            'response' => $invoice
+        ];
+    });
+
     Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
         ->middleware(['auth', 'verified'])
         ->name('tenant.dashboard');
