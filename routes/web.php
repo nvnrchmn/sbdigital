@@ -24,6 +24,24 @@ Route::get('/setup-logikraf-central', function () {
         return "Gagal: " . json_encode($response);
     }
 });
+
+// ROUTE SEMENTARA UNTUK TEST MASTER INVOICE
+Route::get('/test-master-invoice', function () {
+    $logikraf = new \App\Services\LogikrafService();
+    $invoiceId = "INV-SUB-DEBUG-" . time();
+    $tenantId = "sheika";
+    $amount = 100000;
+    $payerEmail = "admin@sbdigital.biz.id";
+    $description = "Test Master Invoice Debugging";
+    
+    $response = $logikraf->createMasterInvoice($invoiceId, $tenantId, $amount, $payerEmail, $description);
+    
+    return [
+        'central_sub_account_id_setting' => \App\Models\Setting::get('logikraf_central_sub_account_id'),
+        'api_key' => substr(\App\Models\Setting::get('logikraf_api_key'), 0, 15) . '...',
+        'response' => $response
+    ];
+});
 Route::middleware(['auth', 'verified', 'role:Super Admin'])->prefix('superadmin')->group(function () {
     Route::get('/dashboard', \App\Livewire\Central\Dashboard\Index::class)->name('superadmin.dashboard');
     Route::get('/up', function () {
