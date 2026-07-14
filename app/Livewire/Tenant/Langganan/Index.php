@@ -60,39 +60,47 @@ class Index extends Component
         ]);
 
         if ($plan->price > 0) {
-            $invoiceId = "INV-SUB-{$subscription->id}";
-            $payerEmail = Auth::user()->email;
-            $description = "Langganan Paket {$plan->name} untuk Portal {$tenantId}";
+            try {
+                $invoiceId = "INV-SUB-{$subscription->id}";
+                $payerEmail = Auth::user() ? Auth::user()->email : 'no-email@sbdigital.com';
+                $description = "Langganan Paket {$plan->name} untuk Portal {$tenantId}";
 
-            $logikraf = new LogikrafService();
-            
-            Log::info('Livewire Langganan: Mengirim request createMasterInvoice', [
-                'invoice_id' => $invoiceId,
-                'tenant_id' => $tenantId,
-                'price' => $plan->price,
-                'payer_email' => $payerEmail,
-                'description' => $description
-            ]);
-
-            $invoice = $logikraf->createMasterInvoice($invoiceId, $tenantId, $plan->price, $payerEmail, $description);
-
-            Log::info('Livewire Langganan: Respon createMasterInvoice', [
-                'response' => $invoice
-            ]);
-
-            if ($invoice && isset($invoice['checkout_url'])) {
-                $subscription->update([
-                    'external_id' => $invoice['external_id'] ?? $invoiceId,
-                    'checkout_url' => $invoice['checkout_url']
-                ]);
+                $logikraf = new LogikrafService();
                 
-                // Pindahkan pengguna (redirect) langsung ke halaman pembayaran Xendit
-                return redirect()->away($invoice['checkout_url']);
-            } else {
-                // Mock for testing if Logikraf is not configured
+                Log::info('Livewire Langganan: Mengirim request createMasterInvoice', [
+                    'invoice_id' => $invoiceId,
+                    'tenant_id' => $tenantId,
+                    'price' => $plan->price,
+                    'payer_email' => $payerEmail,
+                    'description' => $description
+                ]);
+
+                $invoice = $logikraf->createMasterInvoice($invoiceId, $tenantId, $plan->price, $payerEmail, $description);
+
+                Log::info('Livewire Langganan: Respon createMasterInvoice', [
+                    'response' => $invoice
+                ]);
+
+                if ($invoice && isset($invoice['checkout_url'])) {
+                    $subscription->update([
+                        'external_id' => $invoice['external_id'] ?? $invoiceId,
+                        'checkout_url' => $invoice['checkout_url']
+                    ]);
+                    
+                    // Pindahkan pengguna (redirect) langsung ke halaman pembayaran Xendit
+                    return redirect()->away($invoice['checkout_url']);
+                } else {
+                    // Mock for testing if Logikraf is not configured
+                    $subscription->update([
+                        'external_id' => $invoiceId,
+                        'checkout_url' => '#' // Dummy URL
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::error('Livewire Langganan Exception: ' . $e->getMessage());
                 $subscription->update([
-                    'external_id' => $invoiceId,
-                    'checkout_url' => '#' // Dummy URL
+                    'external_id' => $invoiceId ?? 'ERROR',
+                    'checkout_url' => 'ERROR: ' . $e->getMessage()
                 ]);
             }
         } else {
