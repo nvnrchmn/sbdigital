@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $admin->assignRole($superAdminRole);
+        // Panggil seeder lainnya (hanya untuk database sentral)
+        $this->call([
+            PlanSeeder::class,
+        ]);
     }
 }
