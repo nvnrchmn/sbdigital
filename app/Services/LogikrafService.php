@@ -129,6 +129,7 @@ class LogikrafService
                 'external_id' => $invoiceId,
                 'external_reference_id' => $tenantId,
                 'amount' => $amount,
+                'platform_fee_amount' => $amount, // 100% dana langganan ditarik ke SaaS
                 'payer_email' => $payerEmail,
                 'description' => $description,
             ]);

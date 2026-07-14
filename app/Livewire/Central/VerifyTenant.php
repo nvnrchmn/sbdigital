@@ -105,6 +105,14 @@ class VerifyTenant extends Component
                 'plan_id' => $freePlan ? $freePlan->id : null,
             ]);
 
+            // 2.5 Daftarkan Sub-Akun Logikraf
+            try {
+                $logikraf = new \App\Services\LogikrafService();
+                $logikraf->createSubAccount($tenant->id, $tenant->nama_perumahan, $registration->admin_email);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal membuat Sub-Akun Logikraf saat registrasi: ' . $e->getMessage());
+            }
+
             // 3. Buat User Admin di DB Tenant
             $adminData = [
                 'name' => $registration->admin_name,
