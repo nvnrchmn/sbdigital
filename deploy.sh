@@ -54,6 +54,19 @@ if [[ $OUTPUT != *"Already up to date."* ]] || [ "$FORCE_DEPLOY" = true ]; then
 
     # 6. Install dependencies PHP
     echo "Menginstal dependensi Composer..."
+    
+    # Deteksi jika composer global tidak ada, gunakan composer.phar lokal
+    if ! command -v $COMPOSER_BIN &> /dev/null; then
+        echo "Composer global tidak ditemukan. Mencoba mengunduh composer.phar..."
+        if [ ! -f "composer.phar" ]; then
+            curl -sS https://getcomposer.org/installer | $PHP_BIN
+        fi
+        COMPOSER_BIN="$PHP_BIN -d memory_limit=-1 composer.phar"
+    else
+        # Jika composer global ada, pastikan jalankan tanpa batas memori
+        COMPOSER_BIN="$PHP_BIN -d memory_limit=-1 $(command -v $COMPOSER_BIN)"
+    fi
+
     $COMPOSER_BIN install --no-interaction --prefer-dist --optimize-autoloader
 
     # 7. Jalankan Migrasi Database (Central & Tenant)
