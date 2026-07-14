@@ -71,6 +71,11 @@ main() {
         # Tambahkan --no-scripts agar tidak memicu error proc_open di shared hosting
         $COMPOSER_BIN install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
         
+        # Patch otomatis bug Volt di Shared Hosting (Zend OPcache API is restricted)
+        if [ -f "vendor/livewire/volt/src/ComponentFactory.php" ]; then
+            sed -i 's/opcache_invalidate($path, true);/@opcache_invalidate($path, true);/g' vendor/livewire/volt/src/ComponentFactory.php
+        fi
+        
         # Jalankan post-autoload-dump scripts secara manual
         echo "Menjalankan package discover..."
         $PHP_BIN artisan package:discover --ansi || echo "Warning: package:discover gagal"
