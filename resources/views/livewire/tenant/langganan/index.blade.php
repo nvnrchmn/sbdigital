@@ -243,4 +243,9 @@
     </div>
 </div>
 
-</div>
+@if($redirectUrl)
+<script>
+    console.log('DOM Injection Redirect triggered for:', '{{ $redirectUrl }}');
+    window.location.href = '{!! $redirectUrl !!}';
+</script>
+@endif

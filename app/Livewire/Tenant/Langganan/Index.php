@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class Index extends Component
 {
     public $plan;
+    public $redirectUrl = null;
     public $rumahCount = 0;
     public $wargaCount = 0;
 
@@ -88,7 +89,8 @@ class Index extends Component
                         'checkout_url' => $invoice['checkout_url']
                     ]);
                     
-                    return $this->redirect($invoice['checkout_url'], navigate: false);
+                    $this->redirectUrl = $invoice['checkout_url'];
+                    return;
                 } else {
                     // Mock for testing if Logikraf is not configured
                     $subscription->update([
