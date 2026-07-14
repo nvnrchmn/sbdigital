@@ -72,9 +72,14 @@ main() {
         $COMPOSER_BIN install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
         
         # Patch otomatis bug Volt di Shared Hosting (Zend OPcache API is restricted)
-        if [ -f "vendor/livewire/volt/src/ComponentFactory.php" ]; then
-            sed -i 's/opcache_invalidate($path, true);/@opcache_invalidate($path, true);/g' vendor/livewire/volt/src/ComponentFactory.php
-        fi
+        $PHP_BIN -r "
+        \$f = 'vendor/livewire/volt/src/ComponentFactory.php';
+        if (file_exists(\$f)) {
+            \$c = file_get_contents(\$f);
+            \$c = str_replace('opcache_invalidate(\$path, true);', '@opcache_invalidate(\$path, true);', \$c);
+            file_put_contents(\$f, \$c);
+        }
+        "
         
         # Jalankan post-autoload-dump scripts secara manual
         echo "Menjalankan package discover..."
