@@ -13,7 +13,7 @@ class Index extends Component
             'title' => 'Apakah Anda yakin?',
             'text'  => 'Ingin menghapus tenant ini beserta seluruh datanya? Tindakan ini tidak dapat dibatalkan!',
             'action' => 'delete-tenant',
-            'params' => ['id' => $id]
+            'params' => $id
         ]);
     }
 
