@@ -121,15 +121,17 @@ class LogikrafService
         }
 
         try {
+            // Gunakan Sub-Akun SBDigital sendiri agar dana langganan 100% masuk ke SBDigital
+            $centralSubAccount = \App\Models\Setting::get('logikraf_central_sub_account_id', config('logikraf.central_sub_account_id'));
+            
             $response = Http::withHeaders([
                 'X-Logikraf-API-Key' => $this->apiKey,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])->post("{$this->baseUrl}/invoices", [
                 'external_id' => $invoiceId,
-                'external_reference_id' => $tenantId,
+                'external_reference_id' => $centralSubAccount,
                 'amount' => $amount,
-                'platform_fee_amount' => $amount, // 100% dana langganan ditarik ke SaaS
                 'payer_email' => $payerEmail,
                 'description' => $description,
             ]);
