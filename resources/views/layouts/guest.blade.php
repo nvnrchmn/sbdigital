@@ -38,5 +38,7 @@
                 &copy; {{ date('Y') }} SB Digital by Logikraf. All rights reserved.
             </div>
         </div>
+
+        <x-sweetalert />
     </body>
 </html>
