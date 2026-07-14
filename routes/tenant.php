@@ -24,7 +24,7 @@ Route::middleware([
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
 
-    Route::view('dashboard', 'dashboard')
+    Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
         ->middleware(['auth', 'verified'])
         ->name('tenant.dashboard');
 
