@@ -42,17 +42,22 @@ class FindPortal extends Component
         $matchedTenants = [];
 
         foreach ($tenants as $tenant) {
-            $tenant->run(function () use ($email, $tenant, &$matchedTenants) {
-                // Check if user exists in this tenant's DB
-                $user = DB::table('users')->where('email', $email)->first();
-                if ($user) {
-                    $matchedTenants[] = [
-                        'id' => $tenant->id,
-                        'name' => $tenant->name ?? $tenant->id,
-                        'login_url' => url('/' . $tenant->id . '/login')
-                    ];
-                }
-            });
+            try {
+                $tenant->run(function () use ($email, $tenant, &$matchedTenants) {
+                    // Check if user exists in this tenant's DB
+                    $user = DB::table('users')->where('email', $email)->first();
+                    if ($user) {
+                        $matchedTenants[] = [
+                            'id' => $tenant->id,
+                            'name' => $tenant->name ?? $tenant->id,
+                            'login_url' => url('/' . $tenant->id . '/login')
+                        ];
+                    }
+                });
+            } catch (\Exception $e) {
+                // Abaikan jika database tenant rusak atau belum terbuat sempurna
+                continue;
+            }
         }
 
         $this->foundTenants = $matchedTenants;
