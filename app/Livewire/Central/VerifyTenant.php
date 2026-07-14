@@ -41,6 +41,26 @@ class VerifyTenant extends Component
             // 1. Update status
             $registration->update(['status' => 'verified']);
 
+            // 1.5. Buat Database via DirectAdmin API (Jika dikonfigurasi)
+            if (env('DIRECTADMIN_URL') && env('DIRECTADMIN_USERNAME')) {
+                // Konfigurasi nama database (tenancy.php menggunakan prefix sbdigita_)
+                $dbName = 'sbdigita_' . $registration->tenant_id;
+                
+                $daUrl = rtrim(env('DIRECTADMIN_URL'), '/') . '/api/db-manage/databases';
+                
+                $response = \Illuminate\Support\Facades\Http::withBasicAuth(
+                    env('DIRECTADMIN_USERNAME'),
+                    env('DIRECTADMIN_PASSWORD')
+                )->post($daUrl, [
+                    'database' => $dbName
+                ]);
+
+                // 409 = Conflict (Database sudah ada)
+                if (!$response->successful() && $response->status() !== 409) {
+                    throw new \Exception('Gagal membuat database di server (DA Error: ' . $response->status() . ' - ' . $response->body() . ')');
+                }
+            }
+
             // 2. Buat Tenant
             $freePlan = \App\Models\Plan::orderBy('max_houses', 'asc')->first();
             $tenant = Tenant::create([

@@ -49,7 +49,10 @@ class Index extends Component
         Setting::set('logikraf_api_key', $this->logikraf_api_key);
         Setting::set('logikraf_webhook_secret', $this->logikraf_webhook_secret);
 
-        $this->dispatch('notify', message: 'Pengaturan Logikraf berhasil disimpan!');
+        $this->dispatch('notify', [
+            'message' => 'Pengaturan Logikraf berhasil disimpan!',
+            'icon' => 'success'
+        ]);
     }
 
     public function saveMail()
@@ -63,7 +66,10 @@ class Index extends Component
         Setting::set('mail_from_address', $this->mail_from_address);
         Setting::set('mail_from_name', $this->mail_from_name);
 
-        $this->dispatch('notify', message: 'Pengaturan Email SMTP berhasil disimpan!');
+        $this->dispatch('notify', [
+            'message' => 'Pengaturan Email SMTP berhasil disimpan!',
+            'icon' => 'success'
+        ]);
     }
 
     public function render()

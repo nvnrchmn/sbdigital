@@ -79,11 +79,23 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Mailer</label>
-                            <input type="text" wire:model="mail_mailer" placeholder="smtp" class="w-full rounded-xl border-slate-300 focus:border-brand-indigo-500 focus:ring-brand-indigo-500 shadow-sm text-sm">
+                            <select wire:model="mail_mailer" class="w-full rounded-xl border-slate-300 focus:border-brand-indigo-500 focus:ring-brand-indigo-500 shadow-sm text-sm bg-white">
+                                <option value="">-- Pilih Mailer --</option>
+                                <option value="smtp">SMTP (Recommended)</option>
+                                <option value="sendmail">Sendmail</option>
+                                <option value="mailgun">Mailgun</option>
+                                <option value="ses">Amazon SES</option>
+                                <option value="postmark">Postmark</option>
+                                <option value="log">Log (Testing)</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Encryption</label>
-                            <input type="text" wire:model="mail_encryption" placeholder="tls / ssl" class="w-full rounded-xl border-slate-300 focus:border-brand-indigo-500 focus:ring-brand-indigo-500 shadow-sm text-sm">
+                            <select wire:model="mail_encryption" class="w-full rounded-xl border-slate-300 focus:border-brand-indigo-500 focus:ring-brand-indigo-500 shadow-sm text-sm bg-white">
+                                <option value="">Tanpa Enkripsi (None)</option>
+                                <option value="tls">TLS</option>
+                                <option value="ssl">SSL</option>
+                            </select>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Host</label>

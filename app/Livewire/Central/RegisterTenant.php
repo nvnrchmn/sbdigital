@@ -19,7 +19,7 @@ class RegisterTenant extends Component
     public function updatedNamaPerumahan()
     {
         if (empty($this->tenant_id)) {
-            $this->tenant_id = Str::slug($this->nama_perumahan);
+            $this->tenant_id = Str::slug($this->nama_perumahan, '_');
         }
     }
 
@@ -51,8 +51,11 @@ class RegisterTenant extends Component
         // 2. Kirim Email Verifikasi
         \Illuminate\Support\Facades\Mail::to($this->admin_email)->send(new \App\Mail\VerifyTenantEmail($registration));
 
-        // 3. Tampilkan pesan sukses
-        session()->flash('status', 'Pendaftaran berhasil! Silakan periksa email Anda untuk memverifikasi pendaftaran.');
+        // 3. Tampilkan pesan sukses dengan SweetAlert
+        $this->dispatch('notify', [
+            'message' => 'Pendaftaran berhasil! Silakan periksa email Anda untuk memverifikasi pendaftaran.',
+            'icon' => 'success'
+        ]);
         
         $this->reset(['nama_perumahan', 'tenant_id', 'admin_name', 'admin_email', 'admin_password']);
     }

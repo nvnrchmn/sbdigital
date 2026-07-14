@@ -22,10 +22,33 @@ class Index extends Component
     {
         $tenant = \App\Models\Tenant::find($id);
         if ($tenant) {
+            
+            // Hapus Database via DirectAdmin API
+            if (env('DIRECTADMIN_URL') && env('DIRECTADMIN_USERNAME')) {
+                $dbName = 'sbdigita_' . $tenant->id;
+                $daUrl = rtrim(env('DIRECTADMIN_URL'), '/') . '/api/db-manage/databases/' . $dbName;
+                
+                $response = \Illuminate\Support\Facades\Http::withBasicAuth(
+                    env('DIRECTADMIN_USERNAME'),
+                    env('DIRECTADMIN_PASSWORD')
+                )->delete($daUrl, [
+                    'drop-orphan-users' => true
+                ]);
+
+                if (!$response->successful() && $response->status() !== 404) {
+                    $this->dispatch('swal:modal', [
+                        'title' => 'Gagal!',
+                        'text'  => 'Gagal menghapus database di server (DA Error: ' . $response->status() . ')',
+                        'icon'  => 'error',
+                    ]);
+                    return;
+                }
+            }
+
             $tenant->delete();
             $this->dispatch('swal:modal', [
                 'title' => 'Berhasil!',
-                'text'  => 'Tenant berhasil dihapus.',
+                'text'  => 'Tenant beserta databasenya berhasil dihapus permanen.',
                 'icon'  => 'success',
             ]);
         }
