@@ -17,7 +17,7 @@ class LogikrafWebhookController extends Controller
         // di PHP 8 (strict types) -> response jadi 500 alih-alih 400 yang rapi.
         $signature = $request->header('X-Logikraf-Signature', '');
 
-        $secret = \App\Models\Setting::get('logikraf_webhook_secret', config('logikraf.webhook_secret'));
+        $secret = \App\Models\Setting::get('logikraf_api_key', config('logikraf.api_key'));
 
         if ($signature === '' || !hash_equals(hash_hmac('sha256', $payload, $secret), $signature)) {
             Log::warning('Logikraf Webhook signature mismatch atau tidak ada.');
@@ -65,6 +65,14 @@ class LogikrafWebhookController extends Controller
                     $tenant = Tenant::find($subscription->tenant_id);
                     if ($tenant) {
                         $tenant->update(['plan_id' => $subscription->plan_id]);
+
+                        // Send email to Tenant Owner
+                        tenancy()->initialize($tenant);
+                        $owner = \App\Models\User::role('Tenant Owner')->first();
+                        if ($owner && $owner->email) {
+                            \Illuminate\Support\Facades\Mail::to($owner->email)->queue(new \App\Mail\SubscriptionPaidMail($subscription));
+                        }
+                        tenancy()->end();
                     }
                     Log::info("Subscription $subscriptionId marked as Lunas and Tenant {$subscription->tenant_id} updated.");
                 }

@@ -113,7 +113,7 @@ class LogikrafService
      * @param string $description
      * @return array|null
      */
-    public function createMasterInvoice(string $invoiceId, string $tenantId, float $amount, string $payerEmail, string $description)
+    public function createMasterInvoice(string $invoiceId, string $tenantId, float $amount, string $payerEmail, string $description, ?string $successRedirectUrl = null)
     {
         if (!$this->apiKey) {
             Log::warning('Logikraf API Key is missing. Skipping Master Invoice creation.');
@@ -124,17 +124,23 @@ class LogikrafService
             // Gunakan Sub-Akun SBDigital sendiri agar dana langganan 100% masuk ke SBDigital
             $centralSubAccount = \App\Models\Setting::get('logikraf_central_sub_account_id', config('logikraf.central_sub_account_id'));
             
-            $response = Http::withHeaders([
-                'X-Logikraf-API-Key' => $this->apiKey,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->post("{$this->baseUrl}/invoices", [
+            $payload = [
                 'external_id' => $invoiceId,
                 'external_reference_id' => $centralSubAccount,
                 'amount' => $amount,
                 'payer_email' => $payerEmail,
                 'description' => $description,
-            ]);
+            ];
+
+            if ($successRedirectUrl) {
+                $payload['success_redirect_url'] = $successRedirectUrl;
+            }
+
+            $response = Http::withHeaders([
+                'X-Logikraf-API-Key' => $this->apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->post("{$this->baseUrl}/invoices", $payload);
 
             if ($response->successful()) {
                 return $response->json();

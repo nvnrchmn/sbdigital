@@ -77,7 +77,14 @@ class Index extends Component
                     'description' => $description
                 ]);
 
-                $invoice = $logikraf->createMasterInvoice($invoiceId, $tenantId, $plan->price, $payerEmail, $description);
+                $invoice = $logikraf->createMasterInvoice(
+                    $invoiceId, 
+                    $tenantId, 
+                    $plan->price, 
+                    $payerEmail, 
+                    $description,
+                    route('tenant.langganan')
+                );
 
                 Log::info('Livewire Langganan: Respon createMasterInvoice', [
                     'response' => $invoice
