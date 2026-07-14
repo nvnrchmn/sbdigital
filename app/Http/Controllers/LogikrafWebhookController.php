@@ -26,8 +26,12 @@ class LogikrafWebhookController extends Controller
 
         $data = json_decode($payload, true);
 
-        if (isset($data['event']) && $data['event'] === 'invoice.paid') {
-            $invoiceId = $data['data']['external_id'] ?? null;
+        if (isset($data['status']) && in_array($data['status'], ['PAID', 'SETTLED'])) {
+            $phubExternalId = $data['external_id'] ?? '';
+            
+            // Format ID: PHUB-{SAAS_APP_ID}-{EXTERNAL_ID_ANDA}
+            $parts = explode('-', $phubExternalId, 3);
+            $invoiceId = $parts[2] ?? null;
 
             if ($invoiceId && preg_match('/^INV-([A-Za-z0-9_-]+)-(\d+)$/', $invoiceId, $matches)) {
                 $tenantId = $matches[1];
@@ -41,6 +45,7 @@ class LogikrafWebhookController extends Controller
                     $iuran->update([
                         'status' => 'Lunas',
                         'paid_at' => now(),
+                        'payment_method' => $data['payment_method'] ?? null,
                     ]);
                     Log::info("Iuran $iuranId for tenant $tenantId marked as Lunas.");
                 }
