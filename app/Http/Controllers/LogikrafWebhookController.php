@@ -33,25 +33,7 @@ class LogikrafWebhookController extends Controller
             $parts = explode('-', $phubExternalId, 3);
             $invoiceId = $parts[2] ?? null;
 
-            if ($invoiceId && preg_match('/^INV-([A-Za-z0-9_-]+)-(\d+)$/', $invoiceId, $matches)) {
-                $tenantId = $matches[1];
-                $iuranId = $matches[2];
-
-                // Initialize tenant
-                tenancy()->initialize($tenantId);
-
-                $iuran = \App\Models\PembayaranIuran::find($iuranId);
-                if ($iuran) {
-                    $iuran->update([
-                        'status' => 'Lunas',
-                        'paid_at' => now(),
-                        'payment_method' => $data['payment_method'] ?? null,
-                    ]);
-                    Log::info("Iuran $iuranId for tenant $tenantId marked as Lunas.");
-                }
-
-                tenancy()->end();
-            } elseif ($invoiceId && preg_match('/^INV-SUB-(\d+)$/', $invoiceId, $matches)) {
+            if ($invoiceId && preg_match('/^INV-SUB-(\d+)$/', $invoiceId, $matches)) {
                 $subscriptionId = $matches[1];
                 $subscription = \App\Models\TenantSubscription::find($subscriptionId);
 
@@ -76,6 +58,24 @@ class LogikrafWebhookController extends Controller
                     }
                     Log::info("Subscription $subscriptionId marked as Lunas and Tenant {$subscription->tenant_id} updated.");
                 }
+            } elseif ($invoiceId && preg_match('/^INV-([A-Za-z0-9_-]+)-(\d+)$/', $invoiceId, $matches)) {
+                $tenantId = $matches[1];
+                $iuranId = $matches[2];
+
+                // Initialize tenant
+                tenancy()->initialize($tenantId);
+
+                $iuran = \App\Models\PembayaranIuran::find($iuranId);
+                if ($iuran) {
+                    $iuran->update([
+                        'status' => 'Lunas',
+                        'paid_at' => now(),
+                        'payment_method' => $data['payment_method'] ?? null,
+                    ]);
+                    Log::info("Iuran $iuranId for tenant $tenantId marked as Lunas.");
+                }
+
+                tenancy()->end();
             }
         }
 
