@@ -25,7 +25,7 @@ class TenancyServiceProvider extends ServiceProvider
             Events\CreatingTenant::class => [],
             Events\TenantCreated::class => [
                 JobPipeline::make(array_filter([
-                    env('DIRECTADMIN_URL') ? null : Jobs\CreateDatabase::class,
+                    config('services.directadmin.url') ? null : Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
                     Jobs\SeedDatabase::class,
 
@@ -43,7 +43,7 @@ class TenancyServiceProvider extends ServiceProvider
             Events\DeletingTenant::class => [],
             Events\TenantDeleted::class => [
                 JobPipeline::make(array_filter([
-                    env('DIRECTADMIN_URL') ? null : Jobs\DeleteDatabase::class,
+                    config('services.directadmin.url') ? null : Jobs\DeleteDatabase::class,
                 ]))->send(function (Events\TenantDeleted $event) {
                     return $event->tenant;
                 })->shouldBeQueued(false), // `false` by default, but you probably want to make this `true` for production.

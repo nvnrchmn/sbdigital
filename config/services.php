@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'directadmin' => [
+        'url' => env('DIRECTADMIN_URL'),
+        'username' => env('DIRECTADMIN_USERNAME'),
+        'password' => env('DIRECTADMIN_PASSWORD'),
+    ],
+
 ];

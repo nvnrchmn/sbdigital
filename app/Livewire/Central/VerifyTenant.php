@@ -42,15 +42,15 @@ class VerifyTenant extends Component
             $registration->update(['status' => 'verified']);
 
             // 1.5. Buat Database via DirectAdmin API (Jika dikonfigurasi)
-            if (env('DIRECTADMIN_URL') && env('DIRECTADMIN_USERNAME')) {
+            if (config('services.directadmin.url') && config('services.directadmin.username')) {
                 // Konfigurasi nama database (tenancy.php menggunakan prefix sbdigita_)
                 $dbName = 'sbdigita_' . $registration->tenant_id;
                 
-                $daUrl = rtrim(env('DIRECTADMIN_URL'), '/') . '/api/db-manage/databases';
+                $daUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/databases';
                 
                 $response = \Illuminate\Support\Facades\Http::withBasicAuth(
-                    env('DIRECTADMIN_USERNAME'),
-                    env('DIRECTADMIN_PASSWORD')
+                    config('services.directadmin.username'),
+                    config('services.directadmin.password')
                 )->post($daUrl, [
                     'database' => $dbName
                 ]);
