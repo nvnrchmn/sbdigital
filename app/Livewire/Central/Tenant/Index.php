@@ -26,14 +26,12 @@ class Index extends Component
             // Hapus Database via DirectAdmin API
             if (config('services.directadmin.url') && config('services.directadmin.username')) {
                 $dbName = 'sbdigita_' . $tenant->id;
-                $daUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/databases/' . $dbName;
+                $daUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/databases/' . $dbName . '?drop-orphan-users=true';
                 
                 $response = \Illuminate\Support\Facades\Http::withBasicAuth(
                     config('services.directadmin.username'),
                     config('services.directadmin.password')
-                )->delete($daUrl, [
-                    'drop-orphan-users' => true
-                ]);
+                )->delete($daUrl);
 
                 if (!$response->successful() && $response->status() !== 404) {
                     $this->dispatch('swal:modal', [

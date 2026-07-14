@@ -59,6 +59,42 @@ class VerifyTenant extends Component
                 if (!$response->successful() && $response->status() !== 409) {
                     throw new \Exception('Gagal membuat database di server (DA Error: ' . $response->status() . ' - ' . $response->body() . ')');
                 }
+
+                // Berikan hak akses penuh kepada user database sentral
+                $dbUser = config('database.connections.mysql.username'); // cth: sbdigita_central
+                if ($dbUser) {
+                    $privUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/users/' . $dbUser . '/databases/' . $dbName . '/change-privs';
+                    
+                    $privResponse = \Illuminate\Support\Facades\Http::withBasicAuth(
+                        config('services.directadmin.username'),
+                        config('services.directadmin.password')
+                    )->put($privUrl, [
+                        'privileges' => [
+                            'alter' => true,
+                            'alterRoutine' => true,
+                            'create' => true,
+                            'createRoutine' => true,
+                            'createTmpTable' => true,
+                            'createView' => true,
+                            'delete' => true,
+                            'drop' => true,
+                            'event' => true,
+                            'execute' => true,
+                            'index' => true,
+                            'insert' => true,
+                            'lockTables' => true,
+                            'references' => true,
+                            'select' => true,
+                            'showView' => true,
+                            'trigger' => true,
+                            'update' => true,
+                        ]
+                    ]);
+
+                    if (!$privResponse->successful()) {
+                        throw new \Exception('Gagal memberikan hak akses database ke user ' . $dbUser . ' (DA Error: ' . $privResponse->status() . ' - ' . $privResponse->body() . ')');
+                    }
+                }
             }
 
             // 2. Buat Tenant
