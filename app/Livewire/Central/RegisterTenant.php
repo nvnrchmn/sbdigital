@@ -27,10 +27,12 @@ class RegisterTenant extends Component
     {
         $this->validate([
             'nama_perumahan' => 'required|string|max:255',
-            'tenant_id' => 'required|string|alpha_dash|max:50|unique:tenants,id',
+            'tenant_id' => 'required|string|alpha_dash|max:50|unique:tenants,id|unique:tenant_registrations,tenant_id',
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|max:255',
             'admin_password' => 'required|string|min:8',
+        ], [
+            'tenant_id.unique' => 'ID Perumahan/URL ini sudah digunakan atau sedang dalam proses pendaftaran.',
         ]);
 
         // Cari paket gratis

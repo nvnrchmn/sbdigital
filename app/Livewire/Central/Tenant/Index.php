@@ -54,11 +54,25 @@ class Index extends Component
         }
     }
 
+    public function deletePending($id)
+    {
+        $registration = \App\Models\TenantRegistration::find($id);
+        if ($registration) {
+            $registration->delete();
+            $this->dispatch('swal:modal', [
+                'title' => 'Berhasil!',
+                'text'  => 'Antrean pendaftaran berhasil dihapus. Pendaftar kini bisa menggunakan nama tersebut kembali.',
+                'icon'  => 'success',
+            ]);
+        }
+    }
+
     public function render()
     {
         $tenants = \App\Models\Tenant::with('domains')->latest()->paginate(10);
+        $pendings = \App\Models\TenantRegistration::where('status', 'pending')->latest()->get();
 
-        return view('livewire.central.tenant.index', compact('tenants'))
+        return view('livewire.central.tenant.index', compact('tenants', 'pendings'))
             ->layout('layouts.superadmin');
     }
 }

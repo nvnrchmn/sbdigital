@@ -69,4 +69,50 @@
             {{ $tenants->links() }}
         </div>
     </div>
+
+    <!-- Pendaftar Tertunda -->
+    <div class="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-200 bg-amber-50/50">
+            <h3 class="font-display font-bold text-lg text-amber-800">Antrean Pendaftar (Pending Verification)</h3>
+            <p class="text-sm text-amber-600 mt-1">Daftar calon tenant yang belum melakukan klik tautan verifikasi dari email mereka.</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500">
+                    <tr>
+                        <th class="px-6 py-4 font-semibold">Nama Perumahan</th>
+                        <th class="px-6 py-4 font-semibold">ID Booking</th>
+                        <th class="px-6 py-4 font-semibold">Calon Admin</th>
+                        <th class="px-6 py-4 font-semibold">Tanggal Daftar</th>
+                        <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($pendings as $pending)
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-slate-900">{{ $pending->nama_perumahan }}</td>
+                            <td class="px-6 py-4 font-mono text-indigo-600">{{ $pending->tenant_id }}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-medium text-slate-700">{{ $pending->admin_name }}</span>
+                                    <span class="text-slate-500 text-xs">{{ $pending->admin_email }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-500">{{ $pending->created_at->format('d M Y, H:i') }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <button wire:click="deletePending({{ $pending->id }})" onclick="confirm('Yakin ingin menghapus antrean ini?') || event.stopImmediatePropagation()" class="text-rose-600 font-semibold hover:text-rose-800 bg-rose-50 px-3 py-1.5 rounded-lg transition-colors">Hapus Antrean</button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                                <p>Tidak ada pendaftar yang sedang antre/pending.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
