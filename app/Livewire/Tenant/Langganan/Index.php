@@ -88,8 +88,9 @@ class Index extends Component
                         'checkout_url' => $invoice['checkout_url']
                     ]);
                     
-                    // Pindahkan pengguna (redirect) langsung ke halaman pembayaran Xendit menggunakan method standard Livewire 3
-                    return $this->redirect($invoice['checkout_url']);
+                    // Kirim event browser untuk melakukan redirect eksternal via JavaScript
+                    $this->dispatch('redirect-external', url: $invoice['checkout_url']);
+                    return;
                 } else {
                     // Mock for testing if Logikraf is not configured
                     $subscription->update([

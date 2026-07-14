@@ -242,3 +242,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        window.addEventListener('redirect-external', event => {
+            if (event.detail && event.detail.url) {
+                window.location.href = event.detail.url;
+            }
+        });
+    });
+</script>
