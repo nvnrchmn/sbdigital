@@ -76,14 +76,36 @@ if [[ $OUTPUT != *"Already up to date."* ]] || [ "$FORCE_DEPLOY" = true ]; then
     echo "Menjalankan migrasi database tenant..."
     $PHP_BIN artisan tenants:migrate
 
-    # 8. Install & Build Asset Vite (jika npm tersedia di server)
-    if command -v $NPM_BIN &> /dev/null; then
-        echo "Node.js/NPM terdeteksi. Memulai build assets..."
-        $NPM_BIN ci --no-audit --no-fund
+    # 8. Install & Build Asset Vite (UI/UX)
+    echo "Memeriksa ketersediaan Node.js/NPM untuk build UI..."
+    
+    # Smart NPM Locator (Mencari npm di path standar & custom cPanel/DirectAdmin)
+    if ! command -v $NPM_BIN &> /dev/null; then
+        POSSIBLE_NPM_PATHS=(
+            "$HOME/.nvm/versions/node/*/bin/npm"
+            "/opt/alt/alt-nodejs*/root/usr/bin/npm"
+            "$HOME/bin/npm"
+            "$HOME/.local/bin/npm"
+        )
+        for path_pattern in "${POSSIBLE_NPM_PATHS[@]}"; do
+            # Expansion bash untuk pola asterisk
+            for found_path in $path_pattern; do
+                if [ -x "$found_path" ]; then
+                    NPM_BIN="$found_path"
+                    break 2
+                fi
+            done
+        done
+    fi
+
+    if command -v $NPM_BIN &> /dev/null || [ -x "$NPM_BIN" ]; then
+        echo "NPM ditemukan di: $NPM_BIN. Memulai build assets frontend..."
+        # Gunakan install biasa jika ci gagal (beberapa struktur package-lock berbeda lokal/server)
+        $NPM_BIN install --no-audit --no-fund || echo "Warning: npm install ada kendala, mencoba lanjut..."
         $NPM_BIN run build
     else
-        echo "Peringatan: npm tidak ditemukan di PATH server. Melewati proses build frontend."
-        echo "Pastikan asset di public/build sudah di-build lokal dan di-push (jika tidak di-ignore) atau atur path NPM_BIN di atas."
+        echo "Peringatan: npm tidak ditemukan di server (bahkan di path tersembunyi)."
+        echo "Solusi alternatif: Build UI (npm run build) di lokal komputer Anda, lalu hapus folder 'public/build' dari .gitignore agar ikut ter-push ke GitHub."
     fi
 
     # 9. Optimasi Cache untuk Produksi
