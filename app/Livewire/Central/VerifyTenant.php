@@ -46,7 +46,7 @@ class VerifyTenant extends Component
                 // Konfigurasi nama database (tenancy.php menggunakan prefix sbdigita_)
                 $dbName = 'sbdigita_' . $registration->tenant_id;
                 
-                $daUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/create-db';
+                $daUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/databases';
                 
                 $response = \Illuminate\Support\Facades\Http::withBasicAuth(
                     config('services.directadmin.username'),
