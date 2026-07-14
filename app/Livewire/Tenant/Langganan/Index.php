@@ -9,6 +9,7 @@ use App\Models\Warga;
 use App\Models\TenantSubscription;
 use App\Services\LogikrafService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Index extends Component
 {
