@@ -50,7 +50,8 @@ Route::middleware([
             'tenant_id' => $tenantId,
             'invoice_id' => $invoiceId,
             'central_sub_account_id' => \App\Models\Setting::get('logikraf_central_sub_account_id'),
-            'response' => $invoice
+            'response' => $invoice,
+            'all_subscriptions' => \App\Models\TenantSubscription::all()
         ];
     });
 
