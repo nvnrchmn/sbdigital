@@ -245,9 +245,10 @@
 
 <script>
     window.addEventListener('redirect-external', event => {
-        console.log('Redirecting to Xendit:', event.detail);
-        if (event.detail && event.detail.url) {
-            window.location.href = event.detail.url;
+        let payload = Array.isArray(event.detail) ? event.detail[0] : event.detail;
+        console.log('Redirecting to Xendit:', payload);
+        if (payload && payload.url) {
+            window.location.href = payload.url;
         }
     });
 </script>
