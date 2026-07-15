@@ -56,7 +56,7 @@
             @if($status === 'Disetujui')
             <div class="animate-in fade-in slide-in-from-top-2 duration-300">
                 <label for="nomor_surat" class="block text-sm font-semibold text-slate-700 mb-1">Nomor Surat <span class="text-rose-500">*</span></label>
-                <input wire:model="nomor_surat" id="nomor_surat" type="text" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Cth: 001/RT-01/VII/2026" required>
+                <x-text-input wire:model="nomor_surat" id="nomor_surat" type="text" placeholder="Cth: 001/RT-01/VII/2026" required />
                 <p class="text-xs text-slate-500 mt-1">Nomor surat ini akan tercetak pada dokumen PDF surat pengantar.</p>
                 <x-input-error :messages="$errors->get('nomor_surat')" class="mt-1" />
             </div>
@@ -65,19 +65,19 @@
             @if($status === 'Ditolak')
             <div class="animate-in fade-in slide-in-from-top-2 duration-300">
                 <label for="keterangan_admin" class="block text-sm font-semibold text-slate-700 mb-1">Alasan Penolakan</label>
-                <textarea wire:model="keterangan_admin" id="keterangan_admin" rows="3" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-rose-500 focus:border-rose-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Jelaskan mengapa permohonan ini ditolak (Opsional)"></textarea>
+                <textarea wire:model="keterangan_admin" id="keterangan_admin" rows="3" class="flex w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow" placeholder="Jelaskan mengapa permohonan ini ditolak (Opsional)"></textarea>
                 <x-input-error :messages="$errors->get('keterangan_admin')" class="mt-1" />
             </div>
             @endif
 
             <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-slate-100">
-                <button type="button" wire:click="$dispatch('closeModal')" class="px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                <x-secondary-button wire:click="$dispatch('closeModal')">
                     Batal
-                </button>
-                <button type="submit" class="px-5 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                </x-secondary-button>
+                <x-primary-button>
                     <span wire:loading.remove wire:target="save">Simpan Keputusan</span>
                     <span wire:loading wire:target="save">Menyimpan...</span>
-                </button>
+                </x-primary-button>
             </div>
         </form>
     </div>

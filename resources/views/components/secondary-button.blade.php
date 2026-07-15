@@ -1,3 +1,9 @@
-<button {{ $attributes->merge(['type' => 'button', 'class' => 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2']) }}>
+@props(['href' => null])
+@php
+    $tag = $href ? 'a' : 'button';
+    $defaultAttributes = $href ? ['href' => $href] : ['type' => 'button'];
+@endphp
+
+<{{ $tag }} {{ $attributes->merge($defaultAttributes)->merge(['class' => 'inline-flex items-center justify-center gap-2 rounded-lg font-sans font-semibold transition disabled:opacity-50 disabled:pointer-events-none bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 h-10 px-4 text-body-md cursor-pointer']) }}>
     {{ $slot }}
-</button>
+</{{ $tag }}>

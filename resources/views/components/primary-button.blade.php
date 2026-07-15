@@ -1,3 +1,9 @@
-<button {{ $attributes->merge(['type' => 'submit', 'class' => 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2']) }}>
+@props(['href' => null])
+@php
+    $tag = $href ? 'a' : 'button';
+    $defaultAttributes = $href ? ['href' => $href] : ['type' => 'submit'];
+@endphp
+
+<{{ $tag }} {{ $attributes->merge($defaultAttributes)->merge(['class' => 'inline-flex items-center justify-center gap-2 rounded-lg font-sans font-semibold transition disabled:opacity-50 disabled:pointer-events-none bg-brand-gradient text-white hover:brightness-105 shadow-sm h-10 px-4 text-body-md cursor-pointer']) }}>
     {{ $slot }}
-</button>
+</{{ $tag }}>

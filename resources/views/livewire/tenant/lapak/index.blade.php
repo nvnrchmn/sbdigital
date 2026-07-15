@@ -5,10 +5,10 @@
             <p class="text-slate-500 text-sm mt-1">Marketplace internal khusus untuk warga perumahan.</p>
         </div>
         @if(Auth::user()->warga_id || Auth::user()->can('create lapak') || Auth::user()->hasRole('Tenant Owner'))
-        <button wire:click="$dispatch('openModal', { component: 'tenant.lapak.form' })" class="inline-flex items-center justify-center gap-2 rounded-xl font-sans font-semibold transition-all duration-300 disabled:opacity-50 bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 h-11 px-6 text-sm">
+        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.lapak.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
             Jual Barang/Jasa
-        </button>
+        </x-primary-button>
         @endif
     </div>
 
@@ -17,11 +17,11 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
             </div>
-            <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari nama produk..." />
+            <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari nama produk..." />
         </div>
         
         <div class="relative w-full sm:w-48">
-            <select wire:model.live="filterKategori" class="block w-full pl-3 pr-10 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none transition-shadow duration-200">
+            <select wire:model.live="filterKategori" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg leading-5 bg-white focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm appearance-none transition-shadow duration-200">
                 <option value="">Semua Kategori</option>
                 <option value="Makanan & Minuman">Makanan & Minuman</option>
                 <option value="Jasa">Jasa</option>
@@ -36,7 +36,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($produks as $produk)
-        <div class="bg-white/80 backdrop-blur-xl border border-white/60 shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl overflow-hidden flex flex-col group relative">
+        <x-card class="flex flex-col group relative">
             
             <!-- Foto Produk -->
             <div class="relative w-full h-48 bg-slate-100 overflow-hidden">
@@ -102,7 +102,7 @@
                 </button>
                 @endif
             </div>
-        </div>
+        </x-card>
         @empty
         <div class="col-span-full py-16 text-center text-slate-500 bg-white/40 backdrop-blur-sm border border-slate-200/60 rounded-2xl border-dashed">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">

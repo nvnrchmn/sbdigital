@@ -6,8 +6,8 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden w-full max-w-3xl mx-auto">
-        <div class="p-8 md:p-10">
+    <x-card class="w-full max-w-3xl mx-auto p-8 md:p-10">
+        <div>
             <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                 <div>
                     <div class="flex items-center gap-3 mb-3">
@@ -34,10 +34,10 @@
 
                 @if($isPengurus && !$isClosed)
                 <div class="shrink-0">
-                    <button wire:click="closePolling" wire:confirm="Tutup polling ini secara paksa?" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-sm font-semibold transition-colors flex items-center shadow-sm">
+                    <x-danger-button wire:click="closePolling" wire:confirm="Tutup polling ini secara paksa?">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         Tutup Polling
-                    </button>
+                    </x-danger-button>
                 </div>
                 @endif
             </div>
@@ -52,7 +52,7 @@
                         <label class="relative flex cursor-pointer rounded-xl border border-slate-200 bg-white p-5 hover:bg-slate-50 focus:outline-none has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50/50 has-[:checked]:ring-1 has-[:checked]:ring-indigo-500 transition-all shadow-sm hover:shadow">
                             <div class="flex items-center gap-4 w-full">
                                 <div class="flex items-center">
-                                    <input type="radio" wire:model="selectedOption" value="{{ $option->id }}" class="h-5 w-5 border-slate-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input type="radio" wire:model="selectedOption" value="{{ $option->id }}" class="h-5 w-5 border-slate-300 text-brand-indigo-600 focus:ring-brand-indigo-600">
                                 </div>
                                 <div class="flex-1">
                                     <p class="font-bold text-slate-900 text-lg">{{ $option->teks }}</p>
@@ -63,11 +63,11 @@
                     </div>
 
                     <div class="mt-8 flex justify-end">
-                        <button wire:click="vote" class="inline-flex justify-center items-center rounded-xl bg-indigo-600 px-8 py-3.5 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:opacity-50" wire:loading.attr="disabled">
+                        <x-primary-button wire:click="vote" class="px-8" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="vote">Berikan Suara Saya</span>
                             <span wire:loading wire:target="vote">Memproses...</span>
                             <svg wire:loading.remove wire:target="vote" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        </button>
+                        </x-primary-button>
                     </div>
 
                 @else
@@ -118,5 +118,5 @@
             </div>
 
         </div>
-    </div>
+    </x-card>
 </div>

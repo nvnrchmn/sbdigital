@@ -5,10 +5,10 @@
             <p class="text-slate-500 text-sm mt-1">Sistem pelaporan dan keluhan warga terpadu.</p>
         </div>
         @if(Auth::user()->warga_id || Auth::user()->can('create keluhan') || Auth::user()->hasRole('Tenant Owner'))
-        <button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.form' })" class="inline-flex items-center justify-center gap-2 rounded-xl font-sans font-semibold transition-all duration-300 disabled:opacity-50 bg-gradient-to-br from-rose-500 to-orange-600 text-white hover:shadow-lg hover:shadow-rose-500/30 hover:-translate-y-0.5 h-11 px-6 text-sm">
+        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Buat Laporan Baru
-        </button>
+        </x-primary-button>
         @endif
     </div>
 
@@ -17,12 +17,12 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
             </div>
-            <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari laporan, deskripsi, pelapor..." />
+            <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm transition-shadow" placeholder="Cari laporan, deskripsi, pelapor..." />
         </div>
         
         <div class="flex gap-4 w-full lg:w-auto">
             <div class="relative w-full lg:w-48">
-                <select wire:model.live="filterKategori" class="block w-full pl-3 pr-10 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none transition-shadow duration-200">
+                <select wire:model.live="filterKategori" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg leading-5 bg-white focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm appearance-none transition-shadow">
                     <option value="">Semua Kategori</option>
                     <option value="Fasilitas Umum">Fasilitas Umum</option>
                     <option value="Keamanan">Keamanan</option>
@@ -36,7 +36,7 @@
             </div>
 
             <div class="relative w-full lg:w-48">
-                <select wire:model.live="filterStatus" class="block w-full pl-3 pr-10 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none transition-shadow duration-200">
+                <select wire:model.live="filterStatus" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg leading-5 bg-white focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm appearance-none transition-shadow">
                     <option value="">Semua Status</option>
                     <option value="Menunggu">Menunggu</option>
                     <option value="Diproses">Diproses</option>
@@ -52,7 +52,7 @@
 
     <div class="space-y-6">
         @forelse($keluhans as $keluhan)
-        <div class="bg-white/80 backdrop-blur-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl overflow-hidden group">
+        <x-card class="p-0 overflow-hidden group">
             <div class="flex flex-col md:flex-row">
                 <!-- Bagian Kiri: Info Tiket -->
                 <div class="flex-1 p-6 md:p-8 flex flex-col">
@@ -82,7 +82,7 @@
                         
                         <div class="flex gap-1.5">
                             @if($keluhan->status === 'Menunggu' && (Auth::user()->can('edit keluhan') || Auth::user()->hasRole('Tenant Owner') || Auth::user()->warga_id === $keluhan->warga_id))
-                            <button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.form', arguments: { keluhan: {{ $keluhan->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-center transition-colors border border-slate-200" title="Edit">
+                            <button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.form', arguments: { keluhan: {{ $keluhan->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-brand-indigo-50 hover:text-brand-indigo-600 flex items-center justify-center transition-colors border border-slate-200" title="Edit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                             </button>
                             @endif
@@ -162,7 +162,7 @@
                 </div>
                 @endif
             </div>
-        </div>
+        </x-card>
         @empty
         <div class="col-span-full py-16 text-center text-slate-500 bg-white/40 backdrop-blur-sm border border-slate-200/60 rounded-2xl border-dashed">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">

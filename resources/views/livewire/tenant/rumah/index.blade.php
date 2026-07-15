@@ -5,20 +5,20 @@
             <p class="text-slate-500 text-sm mt-1">Kelola data hunian dan kavling warga di tenant Anda.</p>
         </div>
         @can('create rumah')
-        <button wire:click="$dispatch('openModal', { component: 'tenant.rumah.form' })" class="inline-flex items-center justify-center gap-2 rounded-xl font-sans font-semibold transition-all duration-300 disabled:opacity-50 bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 h-11 px-6 text-sm">
+        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.rumah.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
             Tambah Rumah
-        </button>
+        </x-primary-button>
         @endcan
     </div>
 
-    <div class="bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm rounded-2xl overflow-hidden mb-6">
-        <div class="p-4 border-b border-slate-100/60 flex items-center justify-between">
+    <x-card class="p-0 overflow-hidden mb-6">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
             <div class="relative w-full max-w-md">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
                 </div>
-                <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-white/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari nomor blok..." />
+                <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari nomor blok..." />
             </div>
         </div>
 
@@ -50,12 +50,12 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 @can('edit rumah')
-                                <button wire:click="$dispatch('openModal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                <button wire:click="$dispatch('openModal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-brand-indigo-600 hover:bg-brand-indigo-50 transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                                 </button>
                                 @endcan
                                 @can('delete rumah')
-                                <button wire:click="delete({{ $rumah->id }})" wire:confirm="Yakin ingin menghapus rumah ini? Semua data terkait akan ikut terhapus." class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                <button wire:click="delete({{ $rumah->id }})" wire:confirm="Yakin ingin menghapus rumah ini? Semua data terkait akan ikut terhapus." class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                 </button>
                                 @endcan
@@ -131,8 +131,8 @@
             @endforelse
         </div>
         
-        <div class="p-4 border-t border-slate-100/60 bg-slate-50/30">
+        <div class="p-4 border-t border-slate-100 bg-slate-50/30">
             {{ $rumahs->links() }}
         </div>
-    </div>
+    </x-card>
 </div>

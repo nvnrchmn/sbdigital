@@ -6,19 +6,19 @@
         </div>
     </div>
 
-    <div class="bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm rounded-2xl overflow-hidden mb-6">
-        <div class="p-4 border-b border-slate-100/60 flex items-center">
+    <x-card class="p-0 overflow-hidden mb-6">
+        <div class="p-4 border-b border-slate-100 flex items-center">
             <div class="relative w-full max-w-md">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
                 </div>
-                <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-white/50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari nama atau email pengguna..." />
+                <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari nama atau email pengguna..." />
             </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left whitespace-nowrap">
-                <thead class="bg-slate-50/50 text-slate-500 border-b border-slate-100/60 text-xs uppercase font-semibold tracking-wider">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-100 text-xs uppercase font-semibold tracking-wider">
                     <tr>
                         <th class="px-6 py-4">Pengguna</th>
                         <th class="px-6 py-4">Role / Hak Akses</th>
@@ -77,7 +77,7 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 @if(Auth::id() !== $user->id)
-                                <button wire:click="$dispatch('openModal', { component: 'tenant.role.form', arguments: { user: {{ $user->id }} } })" class="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-indigo-600 hover:text-white hover:bg-indigo-600 transition-colors border border-indigo-200 hover:border-indigo-600 shadow-sm font-medium text-xs">
+                                <button wire:click="$dispatch('openModal', { component: 'tenant.role.form', arguments: { user: {{ $user->id }} } })" class="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-brand-indigo-600 hover:text-white hover:bg-brand-indigo-600 transition-colors border border-brand-indigo-200 hover:border-brand-indigo-600 shadow-sm font-medium text-xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                                     Atur Role
                                 </button>
@@ -99,8 +99,8 @@
             </table>
         </div>
         
-        <div class="p-4 border-t border-slate-100/60 bg-slate-50/30">
+        <div class="p-4 border-t border-slate-100">
             {{ $users->links() }}
         </div>
-    </div>
+    </x-card>
 </div>

@@ -15,14 +15,14 @@
         <form wire:submit="save" class="space-y-5">
             <div>
                 <label for="judul" class="block text-sm font-semibold text-slate-700 mb-1">Judul Laporan</label>
-                <input wire:model="judul" id="judul" type="text" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Cth: Lampu Taman Utama Mati" required>
+                <x-text-input wire:model="judul" id="judul" type="text" placeholder="Cth: Lampu Taman Utama Mati" required />
                 <x-input-error :messages="$errors->get('judul')" class="mt-1" />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="kategori" class="block text-sm font-semibold text-slate-700 mb-1">Kategori</label>
-                    <select wire:model="kategori" id="kategori" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" required>
+                    <select wire:model="kategori" id="kategori" class="block w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 transition-all duration-200 sm:text-sm" required>
                         <option value="Fasilitas Umum">Fasilitas Umum</option>
                         <option value="Keamanan">Keamanan</option>
                         <option value="Kebersihan">Kebersihan</option>
@@ -33,14 +33,14 @@
                 </div>
                 <div>
                     <label for="lokasi" class="block text-sm font-semibold text-slate-700 mb-1">Lokasi Kejadian <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                    <input wire:model="lokasi" id="lokasi" type="text" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Cth: Depan Blok C2">
+                    <x-text-input wire:model="lokasi" id="lokasi" type="text" placeholder="Cth: Depan Blok C2" />
                     <x-input-error :messages="$errors->get('lokasi')" class="mt-1" />
                 </div>
             </div>
 
             <div>
                 <label for="deskripsi" class="block text-sm font-semibold text-slate-700 mb-1">Deskripsi Keluhan</label>
-                <textarea wire:model="deskripsi" id="deskripsi" rows="4" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Jelaskan secara rinci masalah yang terjadi..." required></textarea>
+                <textarea wire:model="deskripsi" id="deskripsi" rows="4" class="flex w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-brand-indigo-500 focus:ring-4 focus:ring-brand-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow" placeholder="Jelaskan secara rinci masalah yang terjadi..." required></textarea>
                 <x-input-error :messages="$errors->get('deskripsi')" class="mt-1" />
             </div>
 
@@ -69,18 +69,18 @@
                         <input id="dropzone-file" type="file" wire:model="foto" class="hidden" accept="image/*" />
                     </label>
                 </div>
-                <div wire:loading wire:target="foto" class="text-xs text-indigo-600 mt-2 font-medium">Mengunggah foto...</div>
+                <div wire:loading wire:target="foto" class="text-xs text-brand-indigo-600 mt-2 font-medium">Mengunggah foto...</div>
                 <x-input-error :messages="$errors->get('foto')" class="mt-1" />
             </div>
 
             <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-slate-100">
-                <button type="button" wire:click="$dispatch('closeModal')" class="px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                <x-secondary-button wire:click="$dispatch('closeModal')">
                     Batal
-                </button>
-                <button type="submit" class="px-5 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50" wire:loading.attr="disabled">
+                </x-secondary-button>
+                <x-primary-button wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="save">Kirim Laporan</span>
                     <span wire:loading wire:target="save">Mengirim...</span>
-                </button>
+                </x-primary-button>
             </div>
         </form>
     </div>

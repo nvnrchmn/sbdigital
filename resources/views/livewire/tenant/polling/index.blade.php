@@ -5,10 +5,10 @@
             <p class="text-slate-500 text-sm mt-1">Sistem pemungutan suara digital untuk pengambilan keputusan warga.</p>
         </div>
         @if($isPengurus)
-        <button wire:click="$dispatch('openModal', { component: 'tenant.polling.form' })" class="inline-flex items-center justify-center gap-2 rounded-xl font-sans font-semibold transition-all duration-300 disabled:opacity-50 bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 h-11 px-6 text-sm">
+        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.polling.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Buat Polling Baru
-        </button>
+        </x-primary-button>
         @endif
     </div>
 
@@ -17,11 +17,11 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
-            <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Cari polling..." />
+            <input wire:model.live="search" type="text" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm transition-shadow duration-200" placeholder="Cari polling..." />
         </div>
         
         <div class="relative w-full lg:w-48">
-            <select wire:model.live="filterStatus" class="block w-full pl-3 pr-10 py-3 border border-slate-200/60 rounded-xl leading-5 bg-white/60 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none">
+            <select wire:model.live="filterStatus" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg leading-5 bg-white focus:outline-none focus:ring-4 focus:ring-brand-indigo-500/20 focus:border-brand-indigo-500 sm:text-sm appearance-none transition-shadow duration-200">
                 <option value="">Semua Status</option>
                 <option value="Aktif">Aktif</option>
                 <option value="Selesai">Selesai</option>
@@ -38,7 +38,7 @@
             $isClosed = $poll->status !== 'Aktif' || ($poll->tgl_selesai && $poll->tgl_selesai < now());
             $hasVoted = $votedPollIds->contains($poll->id);
         @endphp
-        <div class="bg-white/80 backdrop-blur-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl overflow-hidden flex flex-col group">
+        <x-card class="flex flex-col group p-0 overflow-hidden">
             <div class="p-6 flex-1 flex flex-col">
                 <div class="flex justify-between items-start mb-4">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
@@ -54,7 +54,7 @@
                     
                     @if($isPengurus)
                     <div class="flex gap-1.5">
-                        <button wire:click="$dispatch('openModal', { component: 'tenant.polling.form', arguments: { poll: {{ $poll->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-center transition-colors border border-slate-200">
+                        <button wire:click="$dispatch('openModal', { component: 'tenant.polling.form', arguments: { poll: {{ $poll->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-brand-indigo-50 hover:text-brand-indigo-600 flex items-center justify-center transition-colors border border-slate-200">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                         </button>
                         <button wire:click="delete({{ $poll->id }})" wire:confirm="Hapus polling ini?" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center transition-colors border border-slate-200">
@@ -84,7 +84,7 @@
             <div class="p-4 bg-slate-50 border-t border-slate-100 mt-auto">
                 <a href="{{ route('tenant.polling.show', $poll->id) }}" wire:navigate class="w-full flex justify-center items-center py-2.5 px-4 rounded-xl text-sm font-bold transition-all
                     @if($hasVoted || $isClosed) bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900
-                    @else bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md
+                    @else bg-brand-indigo-600 text-white hover:bg-brand-indigo-700 hover:shadow-md
                     @endif">
                     @if($hasVoted)
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -97,7 +97,7 @@
                     @endif
                 </a>
             </div>
-        </div>
+        </x-card>
         @empty
         <div class="col-span-full py-16 text-center text-slate-500 bg-white/40 backdrop-blur-sm border border-slate-200/60 rounded-2xl border-dashed">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">

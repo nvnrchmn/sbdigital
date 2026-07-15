@@ -1,6 +1,6 @@
 <div class="p-8">
     <div class="flex items-center gap-3 mb-6">
-        <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+        <div class="h-10 w-10 bg-brand-indigo-50 text-brand-indigo-600 rounded-xl flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div>
@@ -24,12 +24,12 @@
             <label class="block text-sm font-medium text-slate-700">Pilih Role / Hak Akses <span class="text-red-500">*</span></label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @foreach($availableRoles as $role)
-                <label class="relative flex items-start p-4 cursor-pointer rounded-xl border {{ in_array($role->name, $selectedRoles) ? 'bg-indigo-50/50 border-indigo-200 shadow-sm' : 'bg-white border-slate-200 hover:bg-slate-50' }} transition-all duration-200 group">
+                <label class="relative flex items-start p-4 cursor-pointer rounded-xl border {{ in_array($role->name, $selectedRoles) ? 'bg-brand-indigo-50/50 border-brand-indigo-200 shadow-sm' : 'bg-white border-slate-200 hover:bg-slate-50' }} transition-all duration-200 group">
                     <div class="flex items-center h-5">
-                        <input type="checkbox" wire:model="selectedRoles" value="{{ $role->name }}" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded transition-colors" />
+                        <input type="checkbox" wire:model="selectedRoles" value="{{ $role->name }}" class="h-4 w-4 text-brand-indigo-600 focus:ring-brand-indigo-500 border-slate-300 rounded transition-colors" />
                     </div>
                     <div class="ml-3 text-sm flex-1">
-                        <span class="font-semibold {{ in_array($role->name, $selectedRoles) ? 'text-indigo-900' : 'text-slate-700' }} block">{{ $role->name }}</span>
+                        <span class="font-semibold {{ in_array($role->name, $selectedRoles) ? 'text-brand-indigo-900' : 'text-slate-700' }} block">{{ $role->name }}</span>
                         <span class="text-xs text-slate-500 block mt-0.5">
                             @if($role->name === 'Tenant Owner')
                                 Memiliki akses penuh ke seluruh sistem dan pengaturan tenant.
@@ -50,16 +50,16 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 mt-8 pt-5 border-t border-slate-100">
-            <button type="button" wire:click="$dispatch('closeModal')" class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-colors">
+            <x-secondary-button wire:click="$dispatch('closeModal')">
                 Batal
-            </button>
-            <button type="submit" wire:loading.attr="disabled" class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-70 flex items-center gap-2">
+            </x-secondary-button>
+            <x-primary-button wire:loading.attr="disabled">
                 <span wire:loading.remove>Simpan Perubahan</span>
                 <span wire:loading class="flex items-center gap-2">
                     <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     Menyimpan...
                 </span>
-            </button>
+            </x-primary-button>
         </div>
     </form>
 </div>

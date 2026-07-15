@@ -52,19 +52,19 @@
 
             <div class="animate-in fade-in slide-in-from-top-2 duration-300">
                 <label for="tanggapan_admin" class="block text-sm font-semibold text-slate-700 mb-1">Tanggapan Resmi</label>
-                <textarea wire:model="tanggapan_admin" id="tanggapan_admin" rows="4" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Tuliskan tanggapan Anda sebagai Pengurus RT..."></textarea>
+                <textarea wire:model="tanggapan_admin" id="tanggapan_admin" rows="4" class="flex w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-brand-indigo-500 focus:ring-4 focus:ring-brand-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow" placeholder="Tuliskan tanggapan Anda sebagai Pengurus RT..."></textarea>
                 <p class="text-xs text-slate-500 mt-1">Tanggapan ini akan terlihat oleh semua warga.</p>
                 <x-input-error :messages="$errors->get('tanggapan_admin')" class="mt-1" />
             </div>
 
             <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-slate-100">
-                <button type="button" wire:click="$dispatch('closeModal')" class="px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                <x-secondary-button wire:click="$dispatch('closeModal')">
                     Batal
-                </button>
-                <button type="submit" class="px-5 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                </x-secondary-button>
+                <x-primary-button>
                     <span wire:loading.remove wire:target="save">Simpan Perubahan</span>
                     <span wire:loading wire:target="save">Menyimpan...</span>
-                </button>
+                </x-primary-button>
             </div>
         </form>
     </div>

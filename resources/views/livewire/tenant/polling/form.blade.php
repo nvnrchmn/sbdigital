@@ -15,19 +15,19 @@
         <form wire:submit="save" class="space-y-5">
             <div>
                 <label for="judul" class="block text-sm font-semibold text-slate-700 mb-1">Topik Polling</label>
-                <input wire:model="judul" id="judul" type="text" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Cth: Pemilihan Warna Cat Gapura Utama" required>
+                <x-text-input wire:model="judul" id="judul" type="text" placeholder="Cth: Pemilihan Warna Cat Gapura Utama" required />
                 <x-input-error :messages="$errors->get('judul')" class="mt-1" />
             </div>
 
             <div>
                 <label for="deskripsi" class="block text-sm font-semibold text-slate-700 mb-1">Deskripsi / Penjelasan <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <textarea wire:model="deskripsi" id="deskripsi" rows="3" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Jelaskan detail dari polling ini..."></textarea>
+                <textarea wire:model="deskripsi" id="deskripsi" rows="3" class="flex w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-brand-indigo-500 focus:ring-4 focus:ring-brand-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow" placeholder="Jelaskan detail dari polling ini..."></textarea>
                 <x-input-error :messages="$errors->get('deskripsi')" class="mt-1" />
             </div>
 
             <div>
                 <label for="tgl_selesai" class="block text-sm font-semibold text-slate-700 mb-1">Batas Waktu Polling <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <input wire:model="tgl_selesai" id="tgl_selesai" type="datetime-local" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors">
+                <x-text-input wire:model="tgl_selesai" id="tgl_selesai" type="datetime-local" />
                 <p class="text-xs text-slate-500 mt-1">Jika dikosongkan, polling harus ditutup manual oleh admin.</p>
                 <x-input-error :messages="$errors->get('tgl_selesai')" class="mt-1" />
             </div>
@@ -35,7 +35,7 @@
             <div class="border-t border-slate-100 pt-5 mt-5">
                 <div class="flex justify-between items-center mb-3">
                     <label class="block text-sm font-semibold text-slate-700">Opsi Pilihan</label>
-                    <button type="button" wire:click="addOpsi" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors flex items-center">
+                    <button type="button" wire:click="addOpsi" class="text-xs font-semibold text-brand-indigo-600 hover:text-brand-indigo-700 bg-brand-indigo-50 hover:bg-brand-indigo-100 px-3 py-1.5 rounded-lg transition-colors flex items-center">
                         <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Tambah Opsi
                     </button>
@@ -45,7 +45,7 @@
                     @foreach($opsi as $index => $ops)
                     <div class="flex gap-2 items-start" wire:key="opsi-{{ $index }}">
                         <div class="flex-1">
-                            <input wire:model="opsi.{{ $index }}" type="text" class="block w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="Opsi {{ $index + 1 }}" required>
+                            <x-text-input wire:model="opsi.{{ $index }}" type="text" placeholder="Opsi {{ $index + 1 }}" required />
                             <x-input-error :messages="$errors->get('opsi.'.$index)" class="mt-1" />
                         </div>
                         @if(count($opsi) > 2)
@@ -60,13 +60,13 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-slate-100">
-                <button type="button" wire:click="$dispatch('closeModal')" class="px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+                <x-secondary-button wire:click="$dispatch('closeModal')">
                     Batal
-                </button>
-                <button type="submit" class="px-5 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50" wire:loading.attr="disabled">
+                </x-secondary-button>
+                <x-primary-button wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="save">Simpan Polling</span>
                     <span wire:loading wire:target="save">Menyimpan...</span>
-                </button>
+                </x-primary-button>
             </div>
         </form>
     </div>
