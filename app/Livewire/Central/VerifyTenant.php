@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Artisan;
 
 #[Layout('layouts.guest')]
 class VerifyTenant extends Component
@@ -19,17 +20,13 @@ class VerifyTenant extends Component
 
     public function mount($token)
     {
-        // Public endpoint, maybe? Or needs auth? If Central component is public, we skip. But Verify is usually public or uses token.
-
         $this->token = $token;
         $this->verify();
     }
 
     public function verify()
     {
-        $registration = TenantRegistration::where('token', $this->token)
-            ->where('status', 'pending')
-            ->first();
+        $registration = TenantRegistration::where('token', $this->token)->where('status', 'pending')->first();
 
         if (!$registration) {
             $this->status = 'error';
@@ -43,16 +40,12 @@ class VerifyTenant extends Component
 
             // 1.5. Buat Database via DirectAdmin API (Jika dikonfigurasi)
             if (config('services.directadmin.url') && config('services.directadmin.username')) {
-                // Konfigurasi nama database (tenancy.php menggunakan prefix sbdigita_)
                 $dbName = 'sbdigita_' . $registration->tenant_id;
-                
+
                 $daUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/create-db';
-                
-                $response = \Illuminate\Support\Facades\Http::withBasicAuth(
-                    config('services.directadmin.username'),
-                    config('services.directadmin.password')
-                )->post($daUrl, [
-                    'database' => $dbName
+
+                $response = \Illuminate\Support\Facades\Http::withBasicAuth(config('services.directadmin.username'), config('services.directadmin.password'))->post($daUrl, [
+                    'database' => $dbName,
                 ]);
 
                 // 409 = Conflict (Database sudah ada)
@@ -61,14 +54,11 @@ class VerifyTenant extends Component
                 }
 
                 // Berikan hak akses penuh kepada user database sentral
-                $dbUser = config('database.connections.mysql.username'); // cth: sbdigita_central
+                $dbUser = config('database.connections.mysql.username');
                 if ($dbUser) {
                     $privUrl = rtrim(config('services.directadmin.url'), '/') . '/api/db-manage/users/' . $dbUser . '/databases/' . $dbName . '/change-privs';
-                    
-                    $privResponse = \Illuminate\Support\Facades\Http::withBasicAuth(
-                        config('services.directadmin.username'),
-                        config('services.directadmin.password')
-                    )->put($privUrl, [
+
+                    $privResponse = \Illuminate\Support\Facades\Http::withBasicAuth(config('services.directadmin.username'), config('services.directadmin.password'))->put($privUrl, [
                         'privileges' => [
                             'alter' => true,
                             'alterRoutine' => true,
@@ -88,11 +78,11 @@ class VerifyTenant extends Component
                             'showView' => true,
                             'trigger' => true,
                             'update' => true,
-                        ]
+                        ],
                     ]);
 
                     if (!$privResponse->successful()) {
-                        throw new \Exception('Gagal memberikan hak akses database ke user ' . $dbUser . ' (DA Error: ' . $privResponse->status() . ' - ' . $privResponse->body() . ')');
+                        throw new \Exception('Gagal memberikan hak akses database (DA Error: ' . $privResponse->status() . ' - ' . $privResponse->body() . ')');
                     }
                 }
             }
@@ -110,14 +100,26 @@ class VerifyTenant extends Component
                 $logikraf = new \App\Services\LogikrafService();
                 $logikraf->createSubAccount($tenant->id, $tenant->nama_perumahan, $registration->admin_email);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Gagal membuat Sub-Akun Logikraf saat registrasi: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Gagal membuat Sub-Akun Logikraf: ' . $e->getMessage());
             }
 
-            // 3. Buat User Admin di DB Tenant
+            // 3. Jalankan TenantSeeder di database tenant (buat permissions & roles)
+            $tenant->run(function () {
+                // Reset permission cache
+                app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+                // Jalankan TenantSeeder
+                \Database\Seeders\TenantSeeder::run();
+
+                // Reset cache lagi
+                app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            });
+
+            // 4. Buat User Admin di DB Tenant
             $adminData = [
                 'name' => $registration->admin_name,
                 'email' => $registration->admin_email,
-                'password' => $registration->admin_password, // sudah di-hash saat pendaftaran
+                'password' => $registration->admin_password,
             ];
 
             $tenant->run(function () use ($adminData) {
@@ -128,10 +130,9 @@ class VerifyTenant extends Component
             $this->status = 'success';
             $this->message = 'Pendaftaran berhasil diverifikasi! Ruang kerja perumahan Anda telah dibuat.';
             $this->tenantUrl = '/' . $tenant->id . '/login';
-
         } catch (\Exception $e) {
             $this->status = 'error';
-            $this->message = 'Terjadi kesalahan saat membuat ruang kerja. Silakan hubungi dukungan kami. Error: ' . $e->getMessage();
+            $this->message = 'Terjadi kesalahan: ' . $e->getMessage();
         }
     }
 

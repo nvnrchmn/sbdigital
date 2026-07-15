@@ -17,9 +17,7 @@ use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 |
 */
 
-Route::middleware([
-    'web',
-])->group(function () {
+Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
@@ -31,16 +29,16 @@ Route::middleware([
             'central_connection_config' => config('tenancy.database.central_connection'),
             'default_connection_config' => config('database.default'),
             'central_sub_account_id' => \App\Models\Setting::get('logikraf_central_sub_account_id', 'FALLBACK_NOT_FOUND'),
-            'api_key' => substr(\App\Models\Setting::get('logikraf_api_key', 'NOT_FOUND'), 0, 10) . '...'
+            'api_key' => substr(\App\Models\Setting::get('logikraf_api_key', 'NOT_FOUND'), 0, 10) . '...',
         ];
     });
 
     // ROUTE SEMENTARA UNTUK SIMULASI MASTER INVOICE DI TENANT
     Route::get('/test-tenant-subscribe', function () {
         $tenantId = tenant('id');
-        $invoiceId = "INV-SUB-TTEST-" . time();
+        $invoiceId = 'INV-SUB-TTEST-' . time();
         $amount = 100000;
-        $payerEmail = "nv.nrchmn@gmail.com";
+        $payerEmail = 'nv.nrchmn@gmail.com';
         $description = "Langganan Paket Premium untuk Portal {$tenantId}";
 
         $logikraf = new \App\Services\LogikrafService();
@@ -51,15 +49,29 @@ Route::middleware([
             'invoice_id' => $invoiceId,
             'central_sub_account_id' => \App\Models\Setting::get('logikraf_central_sub_account_id'),
             'response' => $invoice,
-            'all_subscriptions' => \App\Models\TenantSubscription::all()
+            'all_subscriptions' => \App\Models\TenantSubscription::all(),
         ];
     });
 
     // ROUTE SEMENTARA UNTUK MEMBERSIHKAN TAGIHAN GAGAL
     Route::get('/clean-subscriptions', function () {
         \App\Models\TenantSubscription::where('status', 'Pending')->delete();
-        return "Berhasil menghapus seluruh tagihan Pending yang gagal. Silakan buka halaman langganan tenant Anda kembali.";
+        return 'Berhasil menghapus seluruh tagihan Pending yang gagal. Silakan buka halaman langganan tenant Anda kembali.';
     });
+
+    // ROUTE SEMENTARA: Fix permissions untuk tenant yang sudah ada
+    Route::get('/fix-permissions', function () {
+        try {
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            \Database\Seeders\TenantSeeder::run();
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            return 'Permissions berhasil diperbaiki! Silakan coba CRUD di UI.';
+        } catch (\Exception $e) {
+            return 'Gagal: ' . $e->getMessage();
+        }
+    })
+        ->middleware(['auth', 'verified', 'role:Tenant Owner'])
+        ->name('fix.permissions');
 
     Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
         ->middleware(['auth', 'verified'])
@@ -80,7 +92,7 @@ Route::middleware([
     Route::view('laporan', 'tenant.laporan')
         ->middleware(['auth', 'verified'])
         ->name('tenant.laporan');
-        
+
     Route::view('lapak', 'tenant.lapak')
         ->middleware(['auth', 'verified'])
         ->name('tenant.lapak');
@@ -91,11 +103,11 @@ Route::middleware([
 
     Route::get('/surat/{id}/cetak', function ($id) {
         $surat = \App\Models\SuratPengantar::findOrFail($id);
-        
+
         // Authorization
         $user = Illuminate\Support\Facades\Auth::user();
         $isPengurus = $user->can('approve surat') || $user->hasRole('Tenant Owner');
-        
+
         if (!$isPengurus && $user->warga_id !== $surat->warga_id) {
             abort(403, 'Akses ditolak.');
         }
@@ -105,7 +117,9 @@ Route::middleware([
         }
 
         return view('tenant.surat.cetak', compact('surat'));
-    })->middleware(['auth', 'verified'])->name('tenant.surat.cetak');
+    })
+        ->middleware(['auth', 'verified'])
+        ->name('tenant.surat.cetak');
 
     Route::view('pengumuman', 'tenant.pengumuman')
         ->middleware(['auth', 'verified'])
@@ -135,7 +149,7 @@ Route::middleware([
         ->middleware(['auth'])
         ->name('tenant.profile');
 
-    Route::name('tenant.')->group(function() {
-        require __DIR__.'/auth.php';
+    Route::name('tenant.')->group(function () {
+        require __DIR__ . '/auth.php';
     });
 });
