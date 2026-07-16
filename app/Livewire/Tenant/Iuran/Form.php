@@ -9,20 +9,21 @@ use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
-    public ?PembayaranIuran $iuran = null;
+    public $iuran = null;
     public $id_rumah = '';
     public $bulan = '';
     public $tahun = '';
     public $nominal = '';
     public $status = 'Pending';
 
-    public function mount(PembayaranIuran $iuran = null)
+    public function mount($iuran = null)
     {
         if (!Auth::user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Bendahara'])) {
             abort(403, 'Akses ditolak.');
         }
 
-        if ($iuran && $iuran->exists) {
+        if ($iuran) {
+            $iuran = $iuran instanceof PembayaranIuran ? $iuran : PembayaranIuran::findOrFail($iuran);
             $this->iuran = $iuran;
             $this->id_rumah = $iuran->id_rumah;
             $this->bulan = $iuran->bulan;

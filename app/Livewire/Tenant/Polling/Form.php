@@ -9,20 +9,21 @@ use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
-    public ?Poll $poll = null;
+    public $poll = null;
     public $judul = '';
     public $deskripsi = '';
     public $tgl_selesai = '';
     public $opsi = ['', '']; // Minimal 2 opsi awal
 
-    public function mount(Poll $poll = null)
+    public function mount($poll = null)
     {
         $user = Auth::user();
         if (!$user->can('manage polling') && !$user->hasRole('Tenant Owner')) {
             abort(403, 'Anda tidak memiliki akses mengelola polling.');
         }
 
-        if ($poll && $poll->exists) {
+        if ($poll) {
+            $poll = $poll instanceof Poll ? $poll : Poll::with('options')->findOrFail($poll);
             $this->poll = $poll;
             $this->judul = $poll->judul;
             $this->deskripsi = $poll->deskripsi;

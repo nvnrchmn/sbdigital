@@ -8,15 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
-    public ?SuratPengantar $surat = null;
+    public $surat = null;
     public $jenis_surat = 'Pengantar Pembuatan KTP';
     public $keperluan = '';
 
-    public function mount(SuratPengantar $surat = null)
+    public function mount($surat = null)
     {
         $user = Auth::user();
 
-        if ($surat && $surat->exists) {
+        if ($surat) {
+            $surat = $surat instanceof SuratPengantar ? $surat : SuratPengantar::findOrFail($surat);
             $isPengurus = $user->can('edit surat') || $user->hasRole('Tenant Owner');
             if (!$isPengurus && $user->warga_id !== $surat->warga_id) {
                 abort(403, 'Anda hanya dapat mengedit permohonan Anda sendiri.');

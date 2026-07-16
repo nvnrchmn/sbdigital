@@ -6,6 +6,18 @@
                 Data Warga</h2>
             <p class="text-slate-500 text-sm mt-1">Kelola data profil dan status kependudukan warga.</p>
         </div>
+
+        @if (auth()->user()->hasRole('Tenant Owner'))
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('tenant.data.template', 'warga') }}" class="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">Template</a>
+                <a href="{{ route('tenant.data.export', 'warga') }}" class="inline-flex items-center px-3 py-2 rounded-lg border border-emerald-200 text-xs font-semibold text-emerald-700 hover:bg-emerald-50">Export</a>
+                <form method="POST" action="{{ route('tenant.data.import', 'warga') }}" enctype="multipart/form-data" class="inline-flex items-center gap-2">
+                    @csrf
+                    <input name="file" type="file" accept=".csv,text/csv" required class="block w-40 text-xs text-slate-500 file:mr-2 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100">
+                    <button class="inline-flex items-center px-3 py-2 rounded-lg bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-700">Import</button>
+                </form>
+            </div>
+        @endif
         @can('create warga')
             <x-primary-button wire:click="$dispatch('open-modal', { component: 'tenant.warga.form' })">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"

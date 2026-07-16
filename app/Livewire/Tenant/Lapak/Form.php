@@ -12,7 +12,7 @@ class Form extends Component
 {
     use WithFileUploads;
 
-    public ?ProdukLapak $produk = null;
+    public $produk = null;
     public $nama_produk = '';
     public $deskripsi = '';
     public $harga = '';
@@ -20,11 +20,12 @@ class Form extends Component
     public $foto; // For new upload
     public $existingFoto = null; // For keeping track of existing image
 
-    public function mount(ProdukLapak $produk = null)
+    public function mount($produk = null)
     {
         $user = Auth::user();
 
-        if ($produk && $produk->exists) {
+        if ($produk) {
+            $produk = $produk instanceof ProdukLapak ? $produk : ProdukLapak::findOrFail($produk);
             $isPengurus = $user->can('edit lapak') || $user->hasRole('Tenant Owner');
             if (!$isPengurus && $user->warga_id !== $produk->warga_id) {
                 abort(403, 'Anda hanya dapat mengedit produk Anda sendiri.');

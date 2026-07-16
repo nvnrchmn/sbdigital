@@ -6,7 +6,7 @@ use Livewire\Component;
 
 class Form extends Component
 {
-    public ?\App\Models\Plan $plan = null;
+    public $plan = null;
     public $name;
     public $description;
     public $max_houses = 50;
@@ -14,11 +14,12 @@ class Form extends Component
     public $billing_cycle = 'monthly';
     public $features = [];
 
-    public function mount(?\App\Models\Plan $plan = null)
+    public function mount($plan = null)
     {
         abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
 
-        if ($plan && $plan->exists) {
+        if ($plan) {
+            $plan = $plan instanceof \App\Models\Plan ? $plan : \App\Models\Plan::findOrFail($plan);
             $this->plan = $plan;
             $this->name = $plan->name;
             $this->description = $plan->description;

@@ -7,11 +7,11 @@ use Livewire\Component;
 
 class Form extends Component
 {
-    public ?Rumah $rumah = null;
+    public $rumah = null;
     public $nomor_blok = '';
     public $keterangan = '';
 
-    public function mount(Rumah $rumah = null)
+    public function mount($rumah = null)
     {
         // FIX (P1 - Broken Access Control): sebelumnya tidak ada pengecekan role,
         // warga biasa bisa create/edit data rumah.
@@ -23,7 +23,8 @@ class Form extends Component
             'Anda tidak memiliki akses untuk mengelola data rumah.',
         );
 
-        if ($rumah && $rumah->exists) {
+        if ($rumah) {
+            $rumah = $rumah instanceof Rumah ? $rumah : Rumah::findOrFail($rumah);
             $this->rumah = $rumah;
             $this->nomor_blok = $rumah->nomor_blok;
             $this->keterangan = $rumah->keterangan;

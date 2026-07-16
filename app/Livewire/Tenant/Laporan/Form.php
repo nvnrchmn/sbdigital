@@ -8,15 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
-    public ?LaporanWarga $laporan = null;
+    public $laporan = null;
     public $judul = '';
     public $deskripsi = '';
 
-    public function mount(LaporanWarga $laporan = null)
+    public function mount($laporan = null)
     {
         abort_unless(auth()->user()->can('create laporan') || auth()->user()->can('edit laporan'), 403, 'Akses ditolak.');
 
-        if ($laporan && $laporan->exists) {
+        if ($laporan) {
+            $laporan = $laporan instanceof LaporanWarga ? $laporan : LaporanWarga::findOrFail($laporan);
             $this->laporan = $laporan;
             $this->judul = $laporan->judul;
             $this->deskripsi = $laporan->deskripsi;

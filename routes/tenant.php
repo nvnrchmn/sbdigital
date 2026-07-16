@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TenantDataTransferController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 /*
@@ -80,6 +81,10 @@ Route::middleware(['web'])->group(function () {
     Route::view('rumah', 'tenant.rumah')
         ->middleware(['auth', 'verified'])
         ->name('tenant.rumah');
+
+    Route::get('data/{module}/template', [TenantDataTransferController::class, 'template'])->whereIn('module', ['rumah', 'warga'])->middleware(['auth', 'verified'])->name('tenant.data.template');
+    Route::get('data/{module}/export', [TenantDataTransferController::class, 'export'])->whereIn('module', ['rumah', 'warga'])->middleware(['auth', 'verified'])->name('tenant.data.export');
+    Route::post('data/{module}/import', [TenantDataTransferController::class, 'import'])->whereIn('module', ['rumah', 'warga'])->middleware(['auth', 'verified'])->name('tenant.data.import');
 
     Route::view('warga', 'tenant.warga')
         ->middleware(['auth', 'verified'])
