@@ -6,6 +6,8 @@
                 Data Rumah</h2>
             <p class="text-slate-500 text-sm mt-1">Kelola data hunian dan kavling warga di tenant Anda.</p>
         </div>
+
+        {{-- TEMP: guard against Blade parse errors in production. Remove if you don't see issues. --}}
         @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
             wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form', arguments: {} })"
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
