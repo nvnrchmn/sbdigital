@@ -38,4 +38,9 @@ class Index extends Component
             'rumahs' => $rumahs,
         ]);
     }
+
+    public function test()
+    {
+        dd('Berhasil');
+    }
 }
