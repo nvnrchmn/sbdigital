@@ -62,7 +62,7 @@ class Form extends Component
         $user->syncRoles($this->selectedRoles);
 
         $this->dispatch('roleSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
         $this->dispatch('notify', message: 'Role pengguna berhasil diperbarui');
     }
 

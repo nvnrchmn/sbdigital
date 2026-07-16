@@ -56,7 +56,7 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 mt-8 pt-5 border-t border-slate-100">
-            <x-secondary-button wire:click="$dispatch('closeModal')">
+            <x-secondary-button wire:click="$dispatch('close-modal')">
                 Batal
             </x-secondary-button>
             <x-primary-button>

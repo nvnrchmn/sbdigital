@@ -43,7 +43,7 @@ class Process extends Component
 
         $this->dispatch('notify', message: 'Tanggapan dan status keluhan berhasil diperbarui');
         $this->dispatch('keluhanProcessed');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()

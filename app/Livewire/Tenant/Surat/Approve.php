@@ -54,7 +54,7 @@ class Approve extends Component
 
         $this->dispatch('notify', message: 'Status surat berhasil diperbarui');
         $this->dispatch('suratApproved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()

@@ -5,7 +5,7 @@
             <p class="text-slate-500 text-sm mt-1">Marketplace internal khusus untuk warga perumahan.</p>
         </div>
         @if(Auth::user()->warga_id || Auth::user()->can('create lapak') || Auth::user()->hasRole('Tenant Owner'))
-        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.lapak.form' })">
+        <x-primary-button wire:click="$dispatch('open-modal', { component: 'tenant.lapak.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
             Jual Barang/Jasa
         </x-primary-button>
@@ -59,7 +59,7 @@
                 <!-- Opsi Pengeditan -->
                 @if(Auth::user()->can('edit lapak') || Auth::user()->hasRole('Tenant Owner') || Auth::user()->warga_id === $produk->warga_id)
                 <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1.5">
-                    <button wire:click="$dispatch('openModal', { component: 'tenant.lapak.form', arguments: { produk: {{ $produk->id }} } })" class="h-7 w-7 rounded-full bg-white/90 backdrop-blur-sm text-indigo-600 hover:bg-white hover:text-indigo-800 flex items-center justify-center shadow-sm transition-colors" title="Edit">
+                    <button wire:click="$dispatch('open-modal', { component: 'tenant.lapak.form', arguments: { produk: {{ $produk->id }} } })" class="h-7 w-7 rounded-full bg-white/90 backdrop-blur-sm text-indigo-600 hover:bg-white hover:text-indigo-800 flex items-center justify-center shadow-sm transition-colors" title="Edit">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                     </button>
                     <button wire:click="delete({{ $produk->id }})" wire:confirm="Hapus produk ini?" class="h-7 w-7 rounded-full bg-white/90 backdrop-blur-sm text-rose-600 hover:bg-white hover:text-rose-800 flex items-center justify-center shadow-sm transition-colors" title="Hapus">
