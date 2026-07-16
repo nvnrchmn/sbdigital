@@ -9,7 +9,7 @@
 
         {{-- TEMP: guard against Blade parse errors in production. Remove if you don't see issues. --}}
         @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
-            <x-primary-button wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form', arguments: {} })">
+            <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.rumah.form' })">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14" />
@@ -75,7 +75,7 @@
                                     class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                     @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
                                         <button
-                                            wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
+                                            wire:click="$dispatch('openModal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
                                             class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-brand-indigo-600 hover:bg-brand-indigo-50 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -166,7 +166,7 @@
                         <div class="flex justify-end gap-2">
                             @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
                                 <button
-                                    wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
+                                    wire:click="$dispatch('openModal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
                                     class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-xl text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-colors text-xs font-semibold">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
