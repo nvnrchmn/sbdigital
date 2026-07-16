@@ -42,21 +42,22 @@ class Form extends Component
         // setiap kali walau plaintext sama), jadi Laravel `unique:warga,nik` bawaan
         // TIDAK BISA dipakai lagi. Uniqueness dicek manual lewat kolom `nik_hash`
         // (HMAC deterministik dari NIK asli) setelah validasi format.
-        $this->validate([
-            'nik' => ['required', 'string', 'regex:/^\d{16}$/'], // NIK Indonesia = 16 digit angka
-            'nama_lengkap' => 'required|string|max:255',
-            'id_rumah' => 'required|exists:rumah,id',
-            'no_hp' => 'nullable|string|max:255',
-            'status_warga' => 'required|in:Tetap,Kontrak',
-        ], [
-            'nik.regex' => 'NIK harus terdiri dari 16 digit angka.',
-        ]);
+        $this->validate(
+            [
+                'nik' => ['required', 'string', 'regex:/^\d{16}$/'], // NIK Indonesia = 16 digit angka
+                'nama_lengkap' => 'required|string|max:255',
+                'id_rumah' => 'required|exists:rumah,id',
+                'no_hp' => 'nullable|string|max:255',
+                'status_warga' => 'required|in:Tetap,Kontrak',
+            ],
+            [
+                'nik.regex' => 'NIK harus terdiri dari 16 digit angka.',
+            ],
+        );
 
         $nikHash = hash_hmac('sha256', $this->nik, config('app.key'));
 
-        $duplicateExists = Warga::where('nik_hash', $nikHash)
-            ->when($this->warga, fn ($q) => $q->where('id', '!=', $this->warga->id))
-            ->exists();
+        $duplicateExists = Warga::where('nik_hash', $nikHash)->when($this->warga, fn($q) => $q->where('id', '!=', $this->warga->id))->exists();
 
         if ($duplicateExists) {
             $this->addError('nik', 'NIK ini sudah terdaftar untuk warga lain.');
@@ -84,13 +85,13 @@ class Form extends Component
         }
 
         $this->dispatch('wargaSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()
     {
         return view('livewire.tenant.warga.form', [
-            'rumahs' => Rumah::orderBy('nomor_blok')->get()
+            'rumahs' => Rumah::orderBy('nomor_blok')->get(),
         ]);
     }
 }

@@ -38,7 +38,13 @@ class Form extends Component
 
     public function save()
     {
-        abort_unless(auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Bendahara']), 403, 'Akses ditolak.');
+        abort_unless(
+            auth()
+                ->user()
+                ->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Bendahara']),
+            403,
+            'Akses ditolak.',
+        );
 
         $this->validate([
             'id_rumah' => 'required|exists:rumah,id',
@@ -65,12 +71,12 @@ class Form extends Component
                 'nominal' => $this->nominal,
                 'status' => $this->status,
             ]);
-            
+
             // Integrate with Logikraf if Pending
             if ($this->status === 'Pending') {
                 $tenantId = tenant('id');
                 $invoiceId = "INV-{$tenantId}-{$iuran->id}";
-                
+
                 // Get payer email from Warga if exists
                 $rumah = Rumah::with('warga')->find($this->id_rumah);
                 $payerEmail = optional(optional($rumah->warga->first())->user)->email ?? "warga@{$tenantId}.com";
@@ -82,22 +88,22 @@ class Form extends Component
                 if ($invoice && isset($invoice['data']['checkout_url'])) {
                     $iuran->update([
                         'external_id' => $invoice['data']['transaction']['external_id'] ?? $invoiceId,
-                        'checkout_url' => $invoice['data']['checkout_url']
+                        'checkout_url' => $invoice['data']['checkout_url'],
                     ]);
                 }
             }
-            
+
             $this->dispatch('notify', message: 'Tagihan iuran berhasil dibuat');
         }
 
         $this->dispatch('iuranSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()
     {
         return view('livewire.tenant.iuran.form', [
-            'rumahs' => Rumah::orderBy('nomor_blok')->get()
+            'rumahs' => Rumah::orderBy('nomor_blok')->get(),
         ]);
     }
 }

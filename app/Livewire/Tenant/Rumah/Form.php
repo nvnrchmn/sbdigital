@@ -16,9 +16,11 @@ class Form extends Component
         // FIX (P1 - Broken Access Control): sebelumnya tidak ada pengecekan role,
         // warga biasa bisa create/edit data rumah.
         abort_unless(
-            auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
+            auth()
+                ->user()
+                ->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
             403,
-            'Anda tidak memiliki akses untuk mengelola data rumah.'
+            'Anda tidak memiliki akses untuk mengelola data rumah.',
         );
 
         if ($rumah && $rumah->exists) {
@@ -32,8 +34,10 @@ class Form extends Component
     {
         // FIX: cek ulang di save(), konsisten dengan pola di modul Iuran/Warga.
         abort_unless(
-            auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
-            403
+            auth()
+                ->user()
+                ->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']),
+            403,
         );
 
         $this->validate([
@@ -66,7 +70,7 @@ class Form extends Component
         }
 
         $this->dispatch('rumahSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()
