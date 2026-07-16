@@ -5,6 +5,7 @@ namespace App\Livewire\Tenant\Surat;
 use App\Models\SuratPengantar;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Support\TenantPermissions;
 
 class Form extends Component
 {
@@ -18,7 +19,7 @@ class Form extends Component
 
         if ($surat) {
             $surat = $surat instanceof SuratPengantar ? $surat : SuratPengantar::findOrFail($surat);
-            $isPengurus = $user->can('edit surat') || $user->hasRole('Tenant Owner');
+            $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'edit surat');
             if (!$isPengurus && $user->warga_id !== $surat->warga_id) {
                 abort(403, 'Anda hanya dapat mengedit permohonan Anda sendiri.');
             }
@@ -30,7 +31,7 @@ class Form extends Component
             $this->jenis_surat = $surat->jenis_surat;
             $this->keperluan = $surat->keperluan;
         } else {
-            if (!$user->can('create surat') && !$user->hasRole('Tenant Owner') && !$user->warga_id) {
+            if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'create surat') && !$user->warga_id) {
                 abort(403, 'Anda tidak memiliki akses.');
             }
         }
@@ -38,9 +39,10 @@ class Form extends Component
 
     public function save()
     {
-        abort_unless(auth()->user()->can('create surat') || auth()->user()->can('edit surat'), 403, 'Akses ditolak.');
-
         $user = Auth::user();
+        if (!$user->warga_id && !TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, ['create surat', 'edit surat'])) {
+            abort(403, 'Akses ditolak.');
+        }
         if (!$user->warga_id) {
             abort(403, 'Anda harus melengkapi data warga Anda terlebih dahulu sebelum mengajukan surat.');
         }

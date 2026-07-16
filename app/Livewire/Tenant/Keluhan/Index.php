@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Support\TenantPermissions;
 
 class Index extends Component
 {
@@ -21,7 +22,7 @@ class Index extends Component
     public function delete(Keluhan $keluhan)
     {
         $user = Auth::user();
-        $isPengurus = $user->can('delete keluhan') || $user->hasRole('Tenant Owner');
+        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, 'delete keluhan');
         
         // Warga hanya bisa hapus miliknya sendiri & statusnya harus Menunggu
         if (!$isPengurus) {
@@ -44,7 +45,7 @@ class Index extends Component
     public function render()
     {
         $user = Auth::user();
-        $isPengurus = $user->can('process keluhan') || $user->hasRole('Tenant Owner');
+        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, 'process keluhan');
 
         $query = Keluhan::with('warga')
             ->where(function($q) {

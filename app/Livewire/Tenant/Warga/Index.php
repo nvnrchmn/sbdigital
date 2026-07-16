@@ -26,11 +26,14 @@ class Index extends Component
 
     public function render()
     {
-        $wargas = Warga::with('rumah')
-            ->where('nama_lengkap', 'like', '%' . $this->search . '%')
-            ->orWhere('nik', 'like', '%' . $this->search . '%')
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        $query = Warga::with('rumah')
+            ->where('nama_lengkap', 'like', '%' . $this->search . '%');
+
+        if (preg_match('/^\d{16}$/', $this->search)) {
+            $query->orWhere('nik_hash', hash_hmac('sha256', $this->search, config('app.key')));
+        }
+
+        $wargas = $query->orderBy('id', 'desc')->paginate(10);
 
         return view('livewire.tenant.warga.index', [
             'wargas' => $wargas,
