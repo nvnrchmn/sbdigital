@@ -1,4 +1,17 @@
 <div class="max-w-7xl mx-auto" @if($subscriptions->where('status', 'Pending')->count() > 0) wire:poll.3s @endif>
+    @php
+        $allFeatures = [
+            'warga' => 'Manajemen Data Warga',
+            'iuran' => 'Sistem Tagihan & Iuran',
+            'laporan' => 'Laporan Keuangan Kas',
+            'pengumuman' => 'Papan Pengumuman Digital',
+            'polling' => 'E-Voting & Polling',
+            'surat' => 'Administrasi Surat Pengantar',
+            'keluhan' => 'Sistem Keluhan Warga',
+            'lapak' => 'Marketplace (Lapak Warga)',
+        ];
+    @endphp
+
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-2xl font-bold text-slate-800">Informasi Langganan</h2>
@@ -35,7 +48,7 @@
                 <div class="w-full bg-slate-50 text-slate-500 text-center font-medium py-2.5 rounded-xl text-sm border border-slate-200">
                     Rp {{ number_format($plan->price, 0, ',', '.') }} / {{ $plan->billing_cycle === 'monthly' ? 'Bulan' : 'Tahun' }}
                 </div>
-            </div>
+            </x-card>
 
             <!-- Features & Usage Card -->
             <x-card class="p-6 lg:col-span-2">
@@ -69,16 +82,6 @@
                 <h3 class="text-lg font-semibold text-slate-800 mb-4 pt-4 border-t border-slate-100">Fitur Tersedia</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @php
-                        $allFeatures = [
-                            'warga' => 'Manajemen Data Warga',
-                            'iuran' => 'Sistem Tagihan & Iuran',
-                            'laporan' => 'Laporan Keuangan Kas',
-                            'pengumuman' => 'Papan Pengumuman Digital',
-                            'polling' => 'E-Voting & Polling',
-                            'surat' => 'Administrasi Surat Pengantar',
-                            'keluhan' => 'Sistem Keluhan Warga',
-                            'lapak' => 'Marketplace (Lapak Warga)',
-                        ];
                         $planFeatures = is_array($plan->features) ? $plan->features : [];
                     @endphp
 
