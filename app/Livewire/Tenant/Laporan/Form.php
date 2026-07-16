@@ -61,7 +61,7 @@ class Form extends Component
         }
 
         $this->dispatch('laporanSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()

@@ -65,7 +65,7 @@ class Form extends Component
         }
 
         $this->dispatch('suratSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()

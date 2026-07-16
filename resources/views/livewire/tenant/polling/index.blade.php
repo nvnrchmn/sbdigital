@@ -5,7 +5,7 @@
             <p class="text-slate-500 text-sm mt-1">Sistem pemungutan suara digital untuk pengambilan keputusan warga.</p>
         </div>
         @if($isPengurus)
-        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.polling.form' })">
+        <x-primary-button wire:click="$dispatch('open-modal', { component: 'tenant.polling.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             Buat Polling Baru
         </x-primary-button>
@@ -54,7 +54,7 @@
                     
                     @if($isPengurus)
                     <div class="flex gap-1.5">
-                        <button wire:click="$dispatch('openModal', { component: 'tenant.polling.form', arguments: { poll: {{ $poll->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-brand-indigo-50 hover:text-brand-indigo-600 flex items-center justify-center transition-colors border border-slate-200">
+                        <button wire:click="$dispatch('open-modal', { component: 'tenant.polling.form', arguments: { poll: {{ $poll->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-brand-indigo-50 hover:text-brand-indigo-600 flex items-center justify-center transition-colors border border-slate-200">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                         </button>
                         <button wire:click="delete({{ $poll->id }})" wire:confirm="Hapus polling ini?" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center transition-colors border border-slate-200">

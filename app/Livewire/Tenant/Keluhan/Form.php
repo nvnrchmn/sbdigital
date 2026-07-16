@@ -94,7 +94,7 @@ class Form extends Component
         }
 
         $this->dispatch('keluhanSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()

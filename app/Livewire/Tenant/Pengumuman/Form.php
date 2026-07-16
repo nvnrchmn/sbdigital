@@ -57,7 +57,7 @@ class Form extends Component
         );
 
         $this->dispatch('pengumumanSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
         $this->dispatch('notify', message: 'Pengumuman berhasil disimpan');
     }
 

@@ -89,7 +89,7 @@ class Form extends Component
         }
 
         $this->dispatch('lapakSaved');
-        $this->dispatch('closeModal');
+        $this->dispatch('close-modal');
     }
 
     public function render()
