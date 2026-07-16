@@ -9,20 +9,21 @@ use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
-    public ?Warga $warga = null;
+    public $warga = null;
     public $nik = '';
     public $nama_lengkap = '';
     public $id_rumah = '';
     public $no_hp = '';
     public $status_warga = 'Tetap';
 
-    public function mount(Warga $warga = null)
+    public function mount($warga = null)
     {
         if (!Auth::user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Sekretaris'])) {
             abort(403, 'Anda tidak memiliki akses.');
         }
 
-        if ($warga && $warga->exists) {
+        if ($warga) {
+            $warga = $warga instanceof Warga ? $warga : Warga::findOrFail($warga);
             $this->warga = $warga;
             $this->nik = $warga->nik; // otomatis ter-decrypt via cast di Model
             $this->nama_lengkap = $warga->nama_lengkap;

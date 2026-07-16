@@ -12,7 +12,7 @@ class Form extends Component
 {
     use WithFileUploads;
 
-    public ?Keluhan $keluhan = null;
+    public $keluhan = null;
     public $judul = '';
     public $deskripsi = '';
     public $kategori = 'Fasilitas Umum';
@@ -20,11 +20,12 @@ class Form extends Component
     public $foto;
     public $existingFoto = null;
 
-    public function mount(Keluhan $keluhan = null)
+    public function mount($keluhan = null)
     {
         $user = Auth::user();
 
-        if ($keluhan && $keluhan->exists) {
+        if ($keluhan) {
+            $keluhan = $keluhan instanceof Keluhan ? $keluhan : Keluhan::findOrFail($keluhan);
             $isPengurus = $user->can('edit keluhan') || $user->hasRole('Tenant Owner');
             
             // Warga biasa hanya bisa edit laporannya sendiri yang masih Menunggu

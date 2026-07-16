@@ -31,7 +31,10 @@ class Index extends Component
     public function render()
     {
         $rumahs = Rumah::where('nomor_blok', 'like', '%' . $this->search . '%')
-            ->orderBy('id', 'desc')
+            ->orderByRaw("CASE WHEN nomor_blok REGEXP '^[0-9]+$' THEN 0 WHEN nomor_blok REGEXP '^[A-Za-z]' THEN 1 ELSE 2 END")
+            ->orderByRaw("REGEXP_REPLACE(UPPER(nomor_blok), '[0-9]+', '')")
+            ->orderByRaw("CAST(NULLIF(REGEXP_REPLACE(nomor_blok, '[^0-9]', ''), '') AS UNSIGNED)")
+            ->orderBy('nomor_blok')
             ->paginate(10);
 
         return view('livewire.tenant.rumah.index', [

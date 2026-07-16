@@ -6,7 +6,7 @@ use Livewire\Component;
 
 class Form extends Component
 {
-    public ?\App\Models\Tenant $tenant = null;
+    public $tenant = null;
     public $nama_perumahan;
     public $domain;
     public $nama_admin;
@@ -14,11 +14,12 @@ class Form extends Component
     public $password_admin;
     public $plan_id;
 
-    public function mount(?\App\Models\Tenant $tenant = null)
+    public function mount($tenant = null)
     {
         abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
 
-        if ($tenant && $tenant->exists) {
+        if ($tenant) {
+            $tenant = $tenant instanceof \App\Models\Tenant ? $tenant : \App\Models\Tenant::findOrFail($tenant);
             $this->tenant = $tenant;
             $this->nama_perumahan = $tenant->nama_perumahan;
             $this->nama_admin = $tenant->nama_admin;
