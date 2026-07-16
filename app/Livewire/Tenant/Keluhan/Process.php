@@ -5,6 +5,7 @@ namespace App\Livewire\Tenant\Keluhan;
 use App\Models\Keluhan;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Support\TenantPermissions;
 
 class Process extends Component
 {
@@ -15,7 +16,7 @@ class Process extends Component
     public function mount(Keluhan $keluhan)
     {
         $user = Auth::user();
-        if (!$user->can('process keluhan') && !$user->hasRole('Tenant Owner')) {
+        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, 'process keluhan')) {
             abort(403, 'Anda tidak memiliki akses memproses keluhan.');
         }
 
@@ -27,7 +28,7 @@ class Process extends Component
     public function save()
     {
         $user = Auth::user();
-        if (!$user->can('process keluhan') && !$user->hasRole('Tenant Owner')) {
+        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, 'process keluhan')) {
             abort(403, 'Akses ditolak.');
         }
 

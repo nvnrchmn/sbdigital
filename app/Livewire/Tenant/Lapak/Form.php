@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Support\TenantPermissions;
 
 class Form extends Component
 {
@@ -26,7 +27,7 @@ class Form extends Component
 
         if ($produk) {
             $produk = $produk instanceof ProdukLapak ? $produk : ProdukLapak::findOrFail($produk);
-            $isPengurus = $user->can('edit lapak') || $user->hasRole('Tenant Owner');
+            $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, 'edit lapak');
             if (!$isPengurus && $user->warga_id !== $produk->warga_id) {
                 abort(403, 'Anda hanya dapat mengedit produk Anda sendiri.');
             }
@@ -38,7 +39,7 @@ class Form extends Component
             $this->kategori = $produk->kategori;
             $this->existingFoto = $produk->foto;
         } else {
-            if (!$user->can('create lapak') && !$user->hasRole('Tenant Owner') && !$user->warga_id) {
+            if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, 'create lapak') && !$user->warga_id) {
                 abort(403, 'Anda tidak memiliki akses membuat produk.');
             }
         }
@@ -46,7 +47,12 @@ class Form extends Component
 
     public function save()
     {
-        abort_unless(auth()->user()->can('create lapak') || auth()->user()->can('edit lapak'), 403, 'Akses ditolak.');
+        $user = Auth::user();
+        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, ['create lapak', 'edit lapak']);
+
+        if (!$isPengurus && !$user->warga_id) {
+            abort(403, 'Akses ditolak.');
+        }
 
         $user = Auth::user();
         if (!$user->warga_id) {
