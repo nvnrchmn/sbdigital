@@ -5,6 +5,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -38,11 +39,21 @@ new #[Layout('layouts.guest')] class extends Component
         
         if (tenant()) {
             $validatedTenant = $this->validate([
-                'nik' => ['required', 'string', 'max:16', 'unique:warga,nik'],
+                'nik' => ['required', 'string', 'regex:/^\\d{16}$/'],
                 'nomor_blok' => ['required', 'string', 'max:255'],
                 'status_warga' => ['required', 'in:Tetap,Kontrak'],
                 'no_hp' => ['nullable', 'string', 'max:20'],
+            ], [
+                'nik.regex' => 'NIK harus terdiri dari 16 digit angka.',
             ]);
+
+            $nikHash = hash_hmac('sha256', $validatedTenant['nik'], config('app.key'));
+
+            if (\App\Models\Warga::where('nik_hash', $nikHash)->exists()) {
+                throw ValidationException::withMessages([
+                    'nik' => 'NIK ini sudah terdaftar untuk warga lain.',
+                ]);
+            }
             
             $rumah = \App\Models\Rumah::firstOrCreate(['nomor_blok' => $validatedTenant['nomor_blok']]);
             

@@ -6,6 +6,7 @@ use App\Models\SuratPengantar;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use App\Support\TenantPermissions;
 
 class Index extends Component
 {
@@ -21,12 +22,12 @@ class Index extends Component
         $user = Auth::user();
         
         // Hanya bisa menghapus jika statusnya masih Menunggu, ATAU jika user punya permission delete surat
-        if ($surat->status !== 'Menunggu' && !$user->can('delete surat') && !$user->hasRole('Tenant Owner')) {
+        if ($surat->status !== 'Menunggu' && !TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'delete surat')) {
             abort(403, 'Anda tidak dapat menghapus surat yang sudah diproses.');
         }
 
         // Warga hanya bisa hapus suratnya sendiri
-        if (!$user->can('delete surat') && !$user->hasRole('Tenant Owner') && $user->warga_id !== $surat->warga_id) {
+        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'delete surat') && $user->warga_id !== $surat->warga_id) {
             abort(403, 'Anda hanya dapat menghapus pengajuan Anda sendiri.');
         }
 
@@ -37,7 +38,7 @@ class Index extends Component
     public function render()
     {
         $user = Auth::user();
-        $isPengurus = $user->can('view surat') || $user->can('approve surat') || $user->hasRole('Tenant Owner');
+        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, ['view surat', 'approve surat']);
 
         $query = SuratPengantar::with('warga')
             ->where(function($q) {

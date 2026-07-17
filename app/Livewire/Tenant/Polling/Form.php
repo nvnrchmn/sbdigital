@@ -6,6 +6,7 @@ use App\Models\Poll;
 use App\Models\PollOption;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Support\TenantPermissions;
 
 class Form extends Component
 {
@@ -18,7 +19,7 @@ class Form extends Component
     public function mount($poll = null)
     {
         $user = Auth::user();
-        if (!$user->can('manage polling') && !$user->hasRole('Tenant Owner')) {
+        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::POLLING, 'manage polling')) {
             abort(403, 'Anda tidak memiliki akses mengelola polling.');
         }
 
@@ -51,7 +52,7 @@ class Form extends Component
     public function save()
     {
         $user = Auth::user();
-        if (!$user->can('manage polling') && !$user->hasRole('Tenant Owner')) {
+        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::POLLING, 'manage polling')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -73,11 +74,28 @@ class Form extends Component
         ];
 
         if ($this->poll) {
+            $hasVotes = $this->poll->votes()->exists();
+            $currentOptions = $this->poll->options()->orderBy('id')->pluck('teks')->values()->all();
+
+            if ($hasVotes && $currentOptions !== array_values($this->opsi)) {
+                $this->addError('opsi', 'Opsi polling tidak dapat diubah karena sudah ada warga yang memberikan suara. Buat polling baru jika pilihan harus berubah.');
+                return;
+            }
+
             $this->poll->update($data);
-            
-            // Hapus opsi lama, buat yang baru (agar simpel)
-            $this->poll->options()->delete();
             $poll = $this->poll;
+
+            if (!$hasVotes) {
+                $poll->options()->delete();
+
+                foreach ($this->opsi as $teks) {
+                    PollOption::create([
+                        'poll_id' => $poll->id,
+                        'teks' => $teks,
+                    ]);
+                }
+            }
+
             $message = 'Polling berhasil diperbarui';
         } else {
             $data['created_by'] = $user->id;
@@ -86,11 +104,13 @@ class Form extends Component
             $message = 'Polling baru berhasil dibuat';
         }
 
-        foreach ($this->opsi as $teks) {
-            PollOption::create([
-                'poll_id' => $poll->id,
-                'teks' => $teks,
-            ]);
+        if (!$this->poll) {
+            foreach ($this->opsi as $teks) {
+                PollOption::create([
+                    'poll_id' => $poll->id,
+                    'teks' => $teks,
+                ]);
+            }
         }
 
         $this->dispatch('notify', message: $message);
