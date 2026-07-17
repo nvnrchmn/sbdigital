@@ -70,13 +70,6 @@ class TenancyServiceProvider extends ServiceProvider
             Events\InitializingTenancy::class => [],
             Events\TenancyInitialized::class => [
                 Listeners\BootstrapTenancy::class,
-                // FIX: cache permission Spatie pakai satu key global ('spatie.permission.cache'),
-                // sementara Role/Permission tiap tenant punya ID berbeda (database-per-tenant).
-                // Tanpa ini, cache dari tenant/central sebelumnya bisa "nyangkut" sampai 24 jam
-                // dan bikin can('manage roles') dkk salah (false padahal permission-nya ada).
-                function () {
-                    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-                },
             ],
 
             Events\EndingTenancy::class => [],
@@ -84,17 +77,10 @@ class TenancyServiceProvider extends ServiceProvider
                 Listeners\RevertToCentralContext::class,
             ],
 
-            Events\RevertedToCentralContext::class => [
-                // FIX: sama seperti di atas, tapi untuk arah balik ke central,
-                // supaya permission central tidak ikut "keracunan" cache tenant terakhir.
-                function () {
-                    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-                },
-            ],
-
             Events\BootstrappingTenancy::class => [],
             Events\TenancyBootstrapped::class => [],
             Events\RevertingToCentralContext::class => [],
+            Events\RevertedToCentralContext::class => [],
 
             // Resource syncing
             Events\SyncedResourceSaved::class => [
