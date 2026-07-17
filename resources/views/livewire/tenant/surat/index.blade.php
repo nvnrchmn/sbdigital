@@ -5,7 +5,7 @@
             <p class="text-slate-500 text-sm mt-1">Layanan pembuatan surat pengantar secara mandiri dan cepat.</p>
         </div>
         @if(Auth::user()->warga_id || Auth::user()->can('create surat') || Auth::user()->hasRole('Tenant Owner'))
-        <button wire:click="$dispatch('open-modal', { component: 'tenant.surat.form' })" class="inline-flex items-center justify-center gap-2 rounded-xl font-sans font-semibold transition-all duration-300 disabled:opacity-50 bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 h-11 px-6 text-sm">
+        <button wire:click="$dispatch('openModal', { component: 'tenant.surat.form' })" class="inline-flex items-center justify-center gap-2 rounded-xl font-sans font-semibold transition-all duration-300 disabled:opacity-50 bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 h-11 px-6 text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
             Ajukan Surat
         </button>
@@ -51,7 +51,7 @@
                 <!-- Opsi Pengeditan -->
                 <div class="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     @if($surat->status === 'Menunggu' && (Auth::user()->can('edit surat') || Auth::user()->hasRole('Tenant Owner') || Auth::user()->warga_id === $surat->warga_id))
-                    <button wire:click="$dispatch('open-modal', { component: 'tenant.surat.form', arguments: { surat: {{ $surat->id }} } })" class="h-8 w-8 rounded-full bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-center transition-colors" title="Edit">
+                    <button wire:click="$dispatch('openModal', { component: 'tenant.surat.form', arguments: { surat: {{ $surat->id }} } })" class="h-8 w-8 rounded-full bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-center transition-colors" title="Edit">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                     </button>
                     @endif
@@ -87,7 +87,7 @@
             @if($isPengurus || $surat->status === 'Disetujui' || $surat->status === 'Ditolak')
             <div class="pt-4 mt-4 border-t border-slate-100 flex gap-2">
                 @if($isPengurus && $surat->status === 'Menunggu')
-                <button wire:click="$dispatch('open-modal', { component: 'tenant.surat.approve', arguments: { surat: {{ $surat->id }} } })" class="flex-1 px-3 py-2 text-xs font-semibold text-center text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
+                <button wire:click="$dispatch('openModal', { component: 'tenant.surat.approve', arguments: { surat: {{ $surat->id }} } })" class="flex-1 px-3 py-2 text-xs font-semibold text-center text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
                     Proses
                 </button>
                 @endif

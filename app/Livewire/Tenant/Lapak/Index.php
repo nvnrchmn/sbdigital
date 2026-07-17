@@ -7,7 +7,6 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Support\TenantPermissions;
 
 class Index extends Component
 {
@@ -21,7 +20,7 @@ class Index extends Component
     public function delete(ProdukLapak $produk)
     {
         $user = Auth::user();
-        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, ['edit lapak', 'delete lapak']);
+        $isPengurus = $user->can('edit lapak') || $user->can('delete lapak') || $user->hasRole('Tenant Owner');
         
         if (!$isPengurus && $user->warga_id !== $produk->warga_id) {
             abort(403, 'Anda hanya dapat menghapus produk Anda sendiri.');

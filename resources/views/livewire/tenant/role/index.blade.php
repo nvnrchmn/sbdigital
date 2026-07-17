@@ -77,7 +77,7 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 @if(Auth::id() !== $user->id)
-                                <button wire:click="$dispatch('open-modal', { component: 'tenant.role.form', arguments: { user: {{ $user->id }} } })" class="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-brand-indigo-600 hover:text-white hover:bg-brand-indigo-600 transition-colors border border-brand-indigo-200 hover:border-brand-indigo-600 shadow-sm font-medium text-xs">
+                                <button wire:click="$dispatch('openModal', { component: 'tenant.role.form', arguments: { user: {{ $user->id }} } })" class="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-brand-indigo-600 hover:text-white hover:bg-brand-indigo-600 transition-colors border border-brand-indigo-200 hover:border-brand-indigo-600 shadow-sm font-medium text-xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                                     Atur Role
                                 </button>

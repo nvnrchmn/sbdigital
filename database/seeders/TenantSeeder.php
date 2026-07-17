@@ -19,7 +19,7 @@ class TenantSeeder extends Seeder
 
         // Permissions
         $permissions = [
-            'view warga', 'create warga', 'edit warga', 'delete warga',
+            'view warga', 'create warga', 'edit warga', 'delete warga', 'approve warga',
             'view rumah', 'create rumah', 'edit rumah', 'delete rumah',
             'view iuran', 'create iuran', 'edit iuran', 'delete iuran', 'approve iuran',
             'view laporan', 'create laporan', 'edit laporan', 'delete laporan', 'approve laporan',

@@ -5,21 +5,19 @@ namespace App\Livewire\Tenant\Surat;
 use App\Models\SuratPengantar;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 
 class Form extends Component
 {
-    public $surat = null;
+    public ?SuratPengantar $surat = null;
     public $jenis_surat = 'Pengantar Pembuatan KTP';
     public $keperluan = '';
 
-    public function mount($surat = null)
+    public function mount(SuratPengantar $surat = null)
     {
         $user = Auth::user();
 
-        if ($surat) {
-            $surat = $surat instanceof SuratPengantar ? $surat : SuratPengantar::findOrFail($surat);
-            $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'edit surat');
+        if ($surat && $surat->exists) {
+            $isPengurus = $user->can('edit surat') || $user->hasRole('Tenant Owner');
             if (!$isPengurus && $user->warga_id !== $surat->warga_id) {
                 abort(403, 'Anda hanya dapat mengedit permohonan Anda sendiri.');
             }
@@ -31,7 +29,7 @@ class Form extends Component
             $this->jenis_surat = $surat->jenis_surat;
             $this->keperluan = $surat->keperluan;
         } else {
-            if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'create surat') && !$user->warga_id) {
+            if (!$user->can('create surat') && !$user->hasRole('Tenant Owner') && !$user->warga_id) {
                 abort(403, 'Anda tidak memiliki akses.');
             }
         }
@@ -39,10 +37,9 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('create surat') || auth()->user()->can('edit surat'), 403, 'Akses ditolak.');
+
         $user = Auth::user();
-        if (!$user->warga_id && !TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, ['create surat', 'edit surat'])) {
-            abort(403, 'Akses ditolak.');
-        }
         if (!$user->warga_id) {
             abort(403, 'Anda harus melengkapi data warga Anda terlebih dahulu sebelum mengajukan surat.');
         }
@@ -68,7 +65,7 @@ class Form extends Component
         }
 
         $this->dispatch('suratSaved');
-        $this->dispatch('close-modal');
+        $this->dispatch('closeModal');
     }
 
     public function render()

@@ -6,7 +6,6 @@ use App\Models\Poll;
 use App\Models\PollVote;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 
 class Show extends Component
 {
@@ -15,7 +14,7 @@ class Show extends Component
 
     public function mount(Poll $poll)
     {
-        abort_unless(Auth::check(), 403, 'Akses ditolak.');
+        abort_unless(auth()->user()->can('view polling'), 403, 'Akses ditolak.');
 
         $this->poll = $poll->load(['options', 'votes.warga', 'creator']);
     }
@@ -54,11 +53,6 @@ class Show extends Component
             return;
         }
 
-        if (!$this->poll->options->contains('id', (int) $this->selectedOption)) {
-            $this->dispatch('notify', message: 'Opsi pilihan tidak valid untuk polling ini.', type: 'error');
-            return;
-        }
-
         PollVote::create([
             'poll_id' => $this->poll->id,
             'poll_option_id' => $this->selectedOption,
@@ -72,7 +66,7 @@ class Show extends Component
     public function closePolling()
     {
         $user = Auth::user();
-        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::POLLING, 'manage polling')) {
+        if (!$user->can('manage polling') && !$user->hasRole('Tenant Owner')) {
             abort(403);
         }
 
@@ -114,7 +108,7 @@ class Show extends Component
             }
         }
 
-        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::POLLING, 'manage polling');
+        $isPengurus = $user->can('manage polling') || $user->hasRole('Tenant Owner');
         $isClosed = $this->poll->status !== 'Aktif' || ($this->poll->tgl_selesai && $this->poll->tgl_selesai < now());
 
         return view('livewire.tenant.polling.show', [

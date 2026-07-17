@@ -5,7 +5,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -39,21 +38,27 @@ new #[Layout('layouts.guest')] class extends Component
         
         if (tenant()) {
             $validatedTenant = $this->validate([
-                'nik' => ['required', 'string', 'regex:/^\\d{16}$/'],
+                'nik' => [
+                    'required',
+                    'string',
+                    'max:16',
+                    // FIX (c): kolom `nik` di database TERENKRIPSI (cast 'encrypted' di
+                    // model Warga), jadi rule unique:warga,nik lama tidak pernah benar-benar
+                    // mendeteksi NIK duplikat (ciphertext-nya selalu beda walau NIK sama).
+                    // Cek yang benar harus lewat nik_hash (HMAC deterministik), sama seperti
+                    // yang dipakai model Warga sendiri.
+                    function ($attribute, $value, $fail) {
+                        $hash = hash_hmac('sha256', $value, config('app.key'));
+
+                        if (\App\Models\Warga::where('nik_hash', $hash)->exists()) {
+                            $fail('NIK ini sudah terdaftar. Silakan hubungi pengurus jika ini adalah kesalahan.');
+                        }
+                    },
+                ],
                 'nomor_blok' => ['required', 'string', 'max:255'],
                 'status_warga' => ['required', 'in:Tetap,Kontrak'],
                 'no_hp' => ['nullable', 'string', 'max:20'],
-            ], [
-                'nik.regex' => 'NIK harus terdiri dari 16 digit angka.',
             ]);
-
-            $nikHash = hash_hmac('sha256', $validatedTenant['nik'], config('app.key'));
-
-            if (\App\Models\Warga::where('nik_hash', $nikHash)->exists()) {
-                throw ValidationException::withMessages([
-                    'nik' => 'NIK ini sudah terdaftar untuk warga lain.',
-                ]);
-            }
             
             $rumah = \App\Models\Rumah::firstOrCreate(['nomor_blok' => $validatedTenant['nomor_blok']]);
             
@@ -63,6 +68,10 @@ new #[Layout('layouts.guest')] class extends Component
                 'id_rumah' => $rumah->id,
                 'no_hp' => $validatedTenant['no_hp'],
                 'status_warga' => $validatedTenant['status_warga'],
+                // FIX (a): warga hasil registrasi mandiri (bukan input manual pengurus)
+                // wajib ditinjau dulu sebelum bisa dipakai untuk login ke dashboard.
+                // Lihat App\Http\Middleware\EnsureWargaIsApproved.
+                'status_persetujuan' => 'pending',
             ]);
             
             $userConfig['warga_id'] = $warga->id;

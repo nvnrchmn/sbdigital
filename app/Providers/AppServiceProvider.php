@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // FIX (b): daftarkan eksplisit supaya email verifikasi benar-benar terkirim
+        // saat event Registered dipicu (tidak bisa mengandalkan auto-discovery karena
+        // listener ini ada di namespace framework, bukan di app/Listeners).
+        Event::listen(Registered::class, SendEmailVerificationNotification::class);
+
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
                 $mailMailer = \App\Models\Setting::get('mail_mailer');

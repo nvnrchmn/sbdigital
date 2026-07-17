@@ -6,17 +6,16 @@ use Livewire\Component;
 
 class Form extends Component
 {
-    public $announcement = null;
+    public ?\App\Models\GlobalAnnouncement $announcement = null;
     public $title;
     public $content;
     public $is_active = true;
 
-    public function mount($announcement = null)
+    public function mount(?\App\Models\GlobalAnnouncement $announcement = null)
     {
         abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses ditolak.');
 
-        if ($announcement) {
-            $announcement = $announcement instanceof \App\Models\GlobalAnnouncement ? $announcement : \App\Models\GlobalAnnouncement::findOrFail($announcement);
+        if ($announcement && $announcement->exists) {
             $this->announcement = $announcement;
             $this->title = $announcement->title;
             $this->content = $announcement->content;

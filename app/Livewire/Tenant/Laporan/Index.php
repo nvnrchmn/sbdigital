@@ -6,7 +6,6 @@ use App\Models\LaporanWarga;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 
 class Index extends Component
 {
@@ -20,9 +19,9 @@ class Index extends Component
     public function delete(LaporanWarga $laporan)
     {
         $user = Auth::user();
-        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::LAPORAN, ['edit laporan', 'delete laporan']);
+        $isPengurus = $user->can('edit laporan') || $user->can('delete laporan') || $user->hasRole('Tenant Owner');
         
-        if (!$isPengurus && $user->warga_id !== $laporan->warga_id) {
+        if (!$user->can('delete laporan') && $user->warga_id !== $laporan->warga_id) {
             abort(403, 'Anda hanya dapat menghapus laporan Anda sendiri.');
         }
 
@@ -32,7 +31,7 @@ class Index extends Component
 
     public function publish(LaporanWarga $laporan)
     {
-        if (!TenantPermissions::hasAnyRoleOrPermission(Auth::user(), TenantPermissions::LAPORAN, 'approve laporan')) {
+        if (!Auth::user()->can('approve laporan') && !Auth::user()->hasRole('Tenant Owner')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -42,7 +41,7 @@ class Index extends Component
 
     public function changeStatus(LaporanWarga $laporan, $newStatus)
     {
-        if (!TenantPermissions::hasAnyRoleOrPermission(Auth::user(), TenantPermissions::LAPORAN, 'edit laporan')) {
+        if (!Auth::user()->can('edit laporan') && !Auth::user()->hasRole('Tenant Owner')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -53,7 +52,7 @@ class Index extends Component
     public function render()
     {
         $user = Auth::user();
-        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::LAPORAN, ['edit laporan', 'approve laporan']);
+        $isPengurus = $user->can('edit laporan') || $user->can('approve laporan') || $user->hasRole('Tenant Owner');
 
         $query = LaporanWarga::with('warga')
             ->where(function($q) {

@@ -5,24 +5,18 @@ namespace App\Livewire\Tenant\Laporan;
 use App\Models\LaporanWarga;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 
 class Form extends Component
 {
-    public $laporan = null;
+    public ?LaporanWarga $laporan = null;
     public $judul = '';
     public $deskripsi = '';
 
-    public function mount($laporan = null)
+    public function mount(LaporanWarga $laporan = null)
     {
-        $user = Auth::user();
+        abort_unless(auth()->user()->can('create laporan') || auth()->user()->can('edit laporan'), 403, 'Akses ditolak.');
 
-        if (!$user->warga_id && !TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::LAPORAN, ['create laporan', 'edit laporan'])) {
-            abort(403, 'Akses ditolak.');
-        }
-
-        if ($laporan) {
-            $laporan = $laporan instanceof LaporanWarga ? $laporan : LaporanWarga::findOrFail($laporan);
+        if ($laporan && $laporan->exists) {
             $this->laporan = $laporan;
             $this->judul = $laporan->judul;
             $this->deskripsi = $laporan->deskripsi;
@@ -31,11 +25,9 @@ class Form extends Component
 
     public function save()
     {
-        $user = Auth::user();
+        abort_unless(auth()->user()->can('create laporan') || auth()->user()->can('edit laporan'), 403, 'Akses ditolak.');
 
-        if (!$user->warga_id && !TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::LAPORAN, ['create laporan', 'edit laporan'])) {
-            abort(403, 'Akses ditolak.');
-        }
+        $user = Auth::user();
 
         if (!$user->warga_id) {
             $this->addError('judul', 'Akun Anda belum dikaitkan dengan data Warga, sehingga tidak dapat membuat laporan.');
@@ -47,7 +39,7 @@ class Form extends Component
             'deskripsi' => 'required|string',
         ]);
 
-        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::LAPORAN, ['create laporan', 'edit laporan']);
+        $isPengurus = $user->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Sekretaris']);
 
         if ($this->laporan) {
             if (!$isPengurus && $user->warga_id !== $this->laporan->warga_id) {
@@ -69,7 +61,7 @@ class Form extends Component
         }
 
         $this->dispatch('laporanSaved');
-        $this->dispatch('close-modal');
+        $this->dispatch('closeModal');
     }
 
     public function render()

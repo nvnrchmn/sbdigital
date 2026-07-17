@@ -5,7 +5,6 @@ namespace App\Livewire\Tenant\Surat;
 use App\Models\SuratPengantar;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 
 class Approve extends Component
 {
@@ -17,7 +16,7 @@ class Approve extends Component
     public function mount(SuratPengantar $surat)
     {
         $user = Auth::user();
-        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'approve surat')) {
+        if (!$user->can('approve surat') && !$user->hasRole('Tenant Owner')) {
             abort(403, 'Anda tidak memiliki akses menyetujui surat.');
         }
 
@@ -30,7 +29,7 @@ class Approve extends Component
     public function save()
     {
         $user = Auth::user();
-        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::SURAT, 'approve surat')) {
+        if (!$user->can('approve surat') && !$user->hasRole('Tenant Owner')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -55,7 +54,7 @@ class Approve extends Component
 
         $this->dispatch('notify', message: 'Status surat berhasil diperbarui');
         $this->dispatch('suratApproved');
-        $this->dispatch('close-modal');
+        $this->dispatch('closeModal');
     }
 
     public function render()
