@@ -7,13 +7,12 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Support\TenantPermissions;
 
 class Form extends Component
 {
     use WithFileUploads;
 
-    public $produk = null;
+    public ?ProdukLapak $produk = null;
     public $nama_produk = '';
     public $deskripsi = '';
     public $harga = '';
@@ -21,13 +20,12 @@ class Form extends Component
     public $foto; // For new upload
     public $existingFoto = null; // For keeping track of existing image
 
-    public function mount($produk = null)
+    public function mount(ProdukLapak $produk = null)
     {
         $user = Auth::user();
 
-        if ($produk) {
-            $produk = $produk instanceof ProdukLapak ? $produk : ProdukLapak::findOrFail($produk);
-            $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, 'edit lapak');
+        if ($produk && $produk->exists) {
+            $isPengurus = $user->can('edit lapak') || $user->hasRole('Tenant Owner');
             if (!$isPengurus && $user->warga_id !== $produk->warga_id) {
                 abort(403, 'Anda hanya dapat mengedit produk Anda sendiri.');
             }
@@ -39,7 +37,7 @@ class Form extends Component
             $this->kategori = $produk->kategori;
             $this->existingFoto = $produk->foto;
         } else {
-            if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, 'create lapak') && !$user->warga_id) {
+            if (!$user->can('create lapak') && !$user->hasRole('Tenant Owner') && !$user->warga_id) {
                 abort(403, 'Anda tidak memiliki akses membuat produk.');
             }
         }
@@ -47,12 +45,7 @@ class Form extends Component
 
     public function save()
     {
-        $user = Auth::user();
-        $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::PENGURUS, ['create lapak', 'edit lapak']);
-
-        if (!$isPengurus && !$user->warga_id) {
-            abort(403, 'Akses ditolak.');
-        }
+        abort_unless(auth()->user()->can('create lapak') || auth()->user()->can('edit lapak'), 403, 'Akses ditolak.');
 
         $user = Auth::user();
         if (!$user->warga_id) {
@@ -96,7 +89,7 @@ class Form extends Component
         }
 
         $this->dispatch('lapakSaved');
-        $this->dispatch('close-modal');
+        $this->dispatch('closeModal');
     }
 
     public function render()

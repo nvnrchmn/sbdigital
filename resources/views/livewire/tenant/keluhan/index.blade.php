@@ -5,7 +5,7 @@
             <p class="text-slate-500 text-sm mt-1">Sistem pelaporan dan keluhan warga terpadu.</p>
         </div>
         @if(Auth::user()->warga_id || Auth::user()->can('create keluhan') || Auth::user()->hasRole('Tenant Owner'))
-        <x-primary-button wire:click="$dispatch('open-modal', { component: 'tenant.keluhan.form' })">
+        <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.form' })">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Buat Laporan Baru
         </x-primary-button>
@@ -82,7 +82,7 @@
                         
                         <div class="flex gap-1.5">
                             @if($keluhan->status === 'Menunggu' && (Auth::user()->can('edit keluhan') || Auth::user()->hasRole('Tenant Owner') || Auth::user()->warga_id === $keluhan->warga_id))
-                            <button wire:click="$dispatch('open-modal', { component: 'tenant.keluhan.form', arguments: { keluhan: {{ $keluhan->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-brand-indigo-50 hover:text-brand-indigo-600 flex items-center justify-center transition-colors border border-slate-200" title="Edit">
+                            <button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.form', arguments: { keluhan: {{ $keluhan->id }} } })" class="h-8 w-8 rounded-full bg-slate-50 text-slate-600 hover:bg-brand-indigo-50 hover:text-brand-indigo-600 flex items-center justify-center transition-colors border border-slate-200" title="Edit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                             </button>
                             @endif
@@ -156,7 +156,7 @@
 
                 @if($isPengurus)
                 <div class="shrink-0">
-                    <button wire:click="$dispatch('open-modal', { component: 'tenant.keluhan.process', arguments: { keluhan: {{ $keluhan->id }} } })" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors shadow-sm">
+                    <button wire:click="$dispatch('openModal', { component: 'tenant.keluhan.process', arguments: { keluhan: {{ $keluhan->id }} } })" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors shadow-sm">
                         Proses / Tanggapi
                     </button>
                 </div>

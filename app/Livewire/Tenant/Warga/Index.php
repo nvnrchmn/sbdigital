@@ -24,16 +24,30 @@ class Index extends Component
         $this->dispatch('notify', message: 'Data warga berhasil dihapus');
     }
 
+    // FIX (Alur Approval Registrasi Mandiri): setujui/tolak warga yang daftar sendiri.
+    public function approve(Warga $warga)
+    {
+        abort_unless(auth()->user()->can('approve warga'), 403, 'Anda tidak memiliki akses untuk menyetujui warga.');
+
+        $warga->update(['status_persetujuan' => 'disetujui']);
+        $this->dispatch('notify', message: 'Pendaftaran warga berhasil disetujui. Warga sudah bisa login.');
+    }
+
+    public function reject(Warga $warga)
+    {
+        abort_unless(auth()->user()->can('approve warga'), 403, 'Anda tidak memiliki akses untuk menolak warga.');
+
+        $warga->update(['status_persetujuan' => 'ditolak']);
+        $this->dispatch('notify', message: 'Pendaftaran warga ditolak.');
+    }
+
     public function render()
     {
-        $query = Warga::with('rumah')
-            ->where('nama_lengkap', 'like', '%' . $this->search . '%');
-
-        if (preg_match('/^\d{16}$/', $this->search)) {
-            $query->orWhere('nik_hash', hash_hmac('sha256', $this->search, config('app.key')));
-        }
-
-        $wargas = $query->orderBy('id', 'desc')->paginate(10);
+        $wargas = Warga::with('rumah')
+            ->where('nama_lengkap', 'like', '%' . $this->search . '%')
+            ->orWhere('nik', 'like', '%' . $this->search . '%')
+            ->orderBy('id', 'desc')
+            ->paginate(10);
 
         return view('livewire.tenant.warga.index', [
             'wargas' => $wargas,
