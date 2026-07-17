@@ -14,7 +14,6 @@ class DynamicModal extends Component
     public array $arguments = [];
 
     #[On('open-modal')]
-    #[On('openModal')]
     public function openModal(string $component, array $arguments = [])
     {
         $this->activeComponent = $component;
@@ -23,7 +22,6 @@ class DynamicModal extends Component
     }
 
     #[On('close-modal')]
-    #[On('closeModal')]
     public function closeModal()
     {
         $this->show = false;

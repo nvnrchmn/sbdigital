@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TenantDataTransferController;
+use Livewire\Volt\Volt;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 /*
@@ -74,82 +74,76 @@ Route::middleware(['web'])->group(function () {
         ->middleware(['auth', 'verified', 'role:Tenant Owner'])
         ->name('fix.permissions');
 
-    Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
+    // FIX (Alur Approval Registrasi Mandiri): halaman ini SENGAJA tidak dipasangi
+    // middleware 'warga.approved' -- kalau dipasang, warga yang pending akan
+    // di-redirect balik ke sini terus menerus (infinite redirect loop).
+    Volt::route('menunggu-persetujuan', 'pages.tenant.pending-approval')
         ->middleware(['auth', 'verified'])
-        ->name('tenant.dashboard');
+        ->name('tenant.pending-approval');
 
-    Route::view('rumah', 'tenant.rumah')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.rumah');
+    // Semua modul di bawah ini butuh: login -> email terverifikasi -> akun disetujui pengurus.
+    Route::middleware(['auth', 'verified', 'warga.approved'])->group(function () {
+        Route::get('dashboard', \App\Livewire\Tenant\Dashboard::class)
+            ->name('tenant.dashboard');
 
-    Route::get('data/{module}/template', [TenantDataTransferController::class, 'template'])->whereIn('module', ['rumah', 'warga'])->middleware(['auth', 'verified'])->name('tenant.data.template');
-    Route::get('data/{module}/export', [TenantDataTransferController::class, 'export'])->whereIn('module', ['rumah', 'warga'])->middleware(['auth', 'verified'])->name('tenant.data.export');
-    Route::post('data/{module}/import', [TenantDataTransferController::class, 'import'])->whereIn('module', ['rumah', 'warga'])->middleware(['auth', 'verified'])->name('tenant.data.import');
+        Route::view('rumah', 'tenant.rumah')
+            ->name('tenant.rumah');
 
-    Route::view('warga', 'tenant.warga')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.warga');
+        Route::view('warga', 'tenant.warga')
+            ->name('tenant.warga');
 
-    Route::view('iuran', 'tenant.iuran')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.iuran');
+        Route::view('iuran', 'tenant.iuran')
+            ->name('tenant.iuran');
 
-    Route::view('laporan', 'tenant.laporan')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.laporan');
+        Route::view('laporan', 'tenant.laporan')
+            ->name('tenant.laporan');
 
-    Route::view('lapak', 'tenant.lapak')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.lapak');
+        Route::view('lapak', 'tenant.lapak')
+            ->name('tenant.lapak');
 
-    Route::view('surat', 'tenant.surat')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.surat');
+        Route::view('surat', 'tenant.surat')
+            ->name('tenant.surat');
 
-    Route::get('/surat/{id}/cetak', function ($id) {
-        $surat = \App\Models\SuratPengantar::findOrFail($id);
+        Route::get('/surat/{id}/cetak', function ($id) {
+            $surat = \App\Models\SuratPengantar::findOrFail($id);
 
-        // Authorization
-        $user = Illuminate\Support\Facades\Auth::user();
-        $isPengurus = $user->can('approve surat') || $user->hasRole('Tenant Owner');
+            // Authorization
+            $user = Illuminate\Support\Facades\Auth::user();
+            $isPengurus = $user->can('approve surat') || $user->hasRole('Tenant Owner');
 
-        if (!$isPengurus && $user->warga_id !== $surat->warga_id) {
-            abort(403, 'Akses ditolak.');
-        }
+            if (!$isPengurus && $user->warga_id !== $surat->warga_id) {
+                abort(403, 'Akses ditolak.');
+            }
 
-        if ($surat->status !== 'Disetujui') {
-            abort(404, 'Surat belum disetujui.');
-        }
+            if ($surat->status !== 'Disetujui') {
+                abort(404, 'Surat belum disetujui.');
+            }
 
-        return view('tenant.surat.cetak', compact('surat'));
-    })
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.surat.cetak');
+            return view('tenant.surat.cetak', compact('surat'));
+        })
+            ->name('tenant.surat.cetak');
 
-    Route::view('pengumuman', 'tenant.pengumuman')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.pengumuman');
+        Route::view('pengumuman', 'tenant.pengumuman')
+            ->name('tenant.pengumuman');
 
-    Route::view('keluhan', 'tenant.keluhan')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.keluhan');
+        Route::view('keluhan', 'tenant.keluhan')
+            ->name('tenant.keluhan');
 
-    Route::view('polling', 'tenant.polling')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.polling');
+        Route::view('polling', 'tenant.polling')
+            ->name('tenant.polling');
 
-    Route::get('/polling/{poll}', \App\Livewire\Tenant\Polling\Show::class)
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.polling.show');
+        Route::get('/polling/{poll}', \App\Livewire\Tenant\Polling\Show::class)
+            ->name('tenant.polling.show');
 
-    Route::view('pengaturan', 'tenant.role')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.role');
+        Route::view('pengaturan', 'tenant.role')
+            ->name('tenant.role');
 
-    Route::view('langganan', 'tenant.langganan')
-        ->middleware(['auth', 'verified'])
-        ->name('tenant.langganan');
+        Route::view('langganan', 'tenant.langganan')
+            ->name('tenant.langganan');
+    });
 
+    // FIX: profile SENGAJA tidak dipasangi 'warga.approved' supaya warga yang
+    // masih pending tetap bisa melihat/mengedit profilnya sendiri sambil menunggu.
     Route::view('profile', 'profile')
         ->middleware(['auth'])
         ->name('tenant.profile');

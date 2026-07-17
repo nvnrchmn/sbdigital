@@ -6,25 +6,23 @@ use App\Models\Poll;
 use App\Models\PollOption;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 
 class Form extends Component
 {
-    public $poll = null;
+    public ?Poll $poll = null;
     public $judul = '';
     public $deskripsi = '';
     public $tgl_selesai = '';
     public $opsi = ['', '']; // Minimal 2 opsi awal
 
-    public function mount($poll = null)
+    public function mount(Poll $poll = null)
     {
         $user = Auth::user();
-        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::POLLING, 'manage polling')) {
+        if (!$user->can('manage polling') && !$user->hasRole('Tenant Owner')) {
             abort(403, 'Anda tidak memiliki akses mengelola polling.');
         }
 
-        if ($poll) {
-            $poll = $poll instanceof Poll ? $poll : Poll::with('options')->findOrFail($poll);
+        if ($poll && $poll->exists) {
             $this->poll = $poll;
             $this->judul = $poll->judul;
             $this->deskripsi = $poll->deskripsi;
@@ -52,7 +50,7 @@ class Form extends Component
     public function save()
     {
         $user = Auth::user();
-        if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::POLLING, 'manage polling')) {
+        if (!$user->can('manage polling') && !$user->hasRole('Tenant Owner')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -74,28 +72,11 @@ class Form extends Component
         ];
 
         if ($this->poll) {
-            $hasVotes = $this->poll->votes()->exists();
-            $currentOptions = $this->poll->options()->orderBy('id')->pluck('teks')->values()->all();
-
-            if ($hasVotes && $currentOptions !== array_values($this->opsi)) {
-                $this->addError('opsi', 'Opsi polling tidak dapat diubah karena sudah ada warga yang memberikan suara. Buat polling baru jika pilihan harus berubah.');
-                return;
-            }
-
             $this->poll->update($data);
+            
+            // Hapus opsi lama, buat yang baru (agar simpel)
+            $this->poll->options()->delete();
             $poll = $this->poll;
-
-            if (!$hasVotes) {
-                $poll->options()->delete();
-
-                foreach ($this->opsi as $teks) {
-                    PollOption::create([
-                        'poll_id' => $poll->id,
-                        'teks' => $teks,
-                    ]);
-                }
-            }
-
             $message = 'Polling berhasil diperbarui';
         } else {
             $data['created_by'] = $user->id;
@@ -104,18 +85,16 @@ class Form extends Component
             $message = 'Polling baru berhasil dibuat';
         }
 
-        if (!$this->poll) {
-            foreach ($this->opsi as $teks) {
-                PollOption::create([
-                    'poll_id' => $poll->id,
-                    'teks' => $teks,
-                ]);
-            }
+        foreach ($this->opsi as $teks) {
+            PollOption::create([
+                'poll_id' => $poll->id,
+                'teks' => $teks,
+            ]);
         }
 
         $this->dispatch('notify', message: $message);
         $this->dispatch('pollSaved');
-        $this->dispatch('close-modal');
+        $this->dispatch('closeModal');
     }
 
     public function render()

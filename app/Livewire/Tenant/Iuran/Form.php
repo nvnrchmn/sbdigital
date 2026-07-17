@@ -9,21 +9,20 @@ use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
-    public $iuran = null;
+    public ?PembayaranIuran $iuran = null;
     public $id_rumah = '';
     public $bulan = '';
     public $tahun = '';
     public $nominal = '';
     public $status = 'Pending';
 
-    public function mount($iuran = null)
+    public function mount(PembayaranIuran $iuran = null)
     {
         if (!Auth::user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Bendahara'])) {
             abort(403, 'Akses ditolak.');
         }
 
-        if ($iuran) {
-            $iuran = $iuran instanceof PembayaranIuran ? $iuran : PembayaranIuran::findOrFail($iuran);
+        if ($iuran && $iuran->exists) {
             $this->iuran = $iuran;
             $this->id_rumah = $iuran->id_rumah;
             $this->bulan = $iuran->bulan;
@@ -55,13 +54,9 @@ class Form extends Component
             'status' => 'required|in:Pending,Lunas,Ditolak',
         ]);
 
-        $rumah = Rumah::with('warga')->findOrFail($this->id_rumah);
-        $wargaId = $rumah->warga->first()?->id;
-
         if ($this->iuran) {
             $this->iuran->update([
                 'id_rumah' => $this->id_rumah,
-                'warga_id' => $wargaId,
                 'bulan' => $this->bulan,
                 'tahun' => $this->tahun,
                 'nominal' => $this->nominal,
@@ -71,7 +66,6 @@ class Form extends Component
         } else {
             $iuran = PembayaranIuran::create([
                 'id_rumah' => $this->id_rumah,
-                'warga_id' => $wargaId,
                 'bulan' => $this->bulan,
                 'tahun' => $this->tahun,
                 'nominal' => $this->nominal,
@@ -84,6 +78,7 @@ class Form extends Component
                 $invoiceId = "INV-{$tenantId}-{$iuran->id}";
 
                 // Get payer email from Warga if exists
+                $rumah = Rumah::with('warga')->find($this->id_rumah);
                 $payerEmail = optional(optional($rumah->warga->first())->user)->email ?? "warga@{$tenantId}.com";
                 $description = "Tagihan Iuran Bulan {$this->bulan} Tahun {$this->tahun}";
 

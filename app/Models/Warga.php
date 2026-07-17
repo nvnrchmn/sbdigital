@@ -68,6 +68,25 @@ class Warga extends Model
         return false;
     }
 
+    /**
+     * FIX (Alur Approval Registrasi Mandiri): true jika warga ini sudah disetujui
+     * pengurus dan boleh memakai aplikasi (login ke dashboard tenant).
+     */
+    public function isApproved(): bool
+    {
+        return $this->status_persetujuan === 'disetujui';
+    }
+
+    public function isPendingApproval(): bool
+    {
+        return $this->status_persetujuan === 'pending';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status_persetujuan === 'ditolak';
+    }
+
     public function rumah()
     {
         return $this->belongsTo(Rumah::class, 'id_rumah');

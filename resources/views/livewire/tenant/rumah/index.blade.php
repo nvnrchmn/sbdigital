@@ -7,20 +7,9 @@
             <p class="text-slate-500 text-sm mt-1">Kelola data hunian dan kavling warga di tenant Anda.</p>
         </div>
 
-
-        @if (auth()->user()->hasRole('Tenant Owner'))
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('tenant.data.template', 'rumah') }}" class="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">Template</a>
-                <a href="{{ route('tenant.data.export', 'rumah') }}" class="inline-flex items-center px-3 py-2 rounded-lg border border-emerald-200 text-xs font-semibold text-emerald-700 hover:bg-emerald-50">Export</a>
-                <form method="POST" action="{{ route('tenant.data.import', 'rumah') }}" enctype="multipart/form-data" class="inline-flex items-center gap-2">
-                    @csrf
-                    <input name="file" type="file" accept=".csv,text/csv" required class="block w-40 text-xs text-slate-500 file:mr-2 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100">
-                    <button class="inline-flex items-center px-3 py-2 rounded-lg bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-700">Import</button>
-                </form>
-            </div>
-        @endif
+        {{-- TEMP: guard against Blade parse errors in production. Remove if you don't see issues. --}}
         @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
-            <x-primary-button wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form' })">
+            <x-primary-button wire:click="$dispatch('openModal', { component: 'tenant.rumah.form' })">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14" />
@@ -86,7 +75,7 @@
                                     class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                     @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
                                         <button
-                                            wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
+                                            wire:click="$dispatch('openModal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
                                             class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-brand-indigo-600 hover:bg-brand-indigo-50 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -177,7 +166,7 @@
                         <div class="flex justify-end gap-2">
                             @if (auth()->user()->hasAnyRole(['Tenant Owner', 'Ketua RT', 'Wakil Ketua', 'Sekretaris']))
                                 <button
-                                    wire:click="$dispatch('open-modal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
+                                    wire:click="$dispatch('openModal', { component: 'tenant.rumah.form', arguments: { rumah: {{ $rumah->id }} } })"
                                     class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-xl text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-colors text-xs font-semibold">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

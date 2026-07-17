@@ -6,7 +6,7 @@
             </h3>
             <p class="text-xs text-slate-500 mt-0.5">Tinjau laporan dan berikan tanggapan resmi.</p>
         </div>
-        <button wire:click="$dispatch('close-modal')" class="text-slate-400 hover:text-slate-600 transition-colors bg-white hover:bg-slate-100 p-1.5 rounded-lg border border-slate-200">
+        <button wire:click="$dispatch('closeModal')" class="text-slate-400 hover:text-slate-600 transition-colors bg-white hover:bg-slate-100 p-1.5 rounded-lg border border-slate-200">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
     </div>
@@ -58,7 +58,7 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-slate-100">
-                <x-secondary-button wire:click="$dispatch('close-modal')">
+                <x-secondary-button wire:click="$dispatch('closeModal')">
                     Batal
                 </x-secondary-button>
                 <x-primary-button>

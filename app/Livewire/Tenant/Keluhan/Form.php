@@ -6,14 +6,13 @@ use App\Models\Keluhan;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
-use App\Support\TenantPermissions;
 use Illuminate\Support\Facades\Storage;
 
 class Form extends Component
 {
     use WithFileUploads;
 
-    public $keluhan = null;
+    public ?Keluhan $keluhan = null;
     public $judul = '';
     public $deskripsi = '';
     public $kategori = 'Fasilitas Umum';
@@ -21,13 +20,12 @@ class Form extends Component
     public $foto;
     public $existingFoto = null;
 
-    public function mount($keluhan = null)
+    public function mount(Keluhan $keluhan = null)
     {
         $user = Auth::user();
 
-        if ($keluhan) {
-            $keluhan = $keluhan instanceof Keluhan ? $keluhan : Keluhan::findOrFail($keluhan);
-            $isPengurus = TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, 'edit keluhan');
+        if ($keluhan && $keluhan->exists) {
+            $isPengurus = $user->can('edit keluhan') || $user->hasRole('Tenant Owner');
             
             // Warga biasa hanya bisa edit laporannya sendiri yang masih Menunggu
             if (!$isPengurus) {
@@ -46,7 +44,7 @@ class Form extends Component
             $this->lokasi = $keluhan->lokasi;
             $this->existingFoto = $keluhan->foto;
         } else {
-            if (!TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, 'create keluhan') && !$user->warga_id) {
+            if (!$user->can('create keluhan') && !$user->hasRole('Tenant Owner') && !$user->warga_id) {
                 abort(403, 'Anda tidak memiliki akses membuat laporan keluhan.');
             }
         }
@@ -54,10 +52,9 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('create keluhan') || auth()->user()->can('edit keluhan'), 403, 'Akses ditolak.');
+
         $user = Auth::user();
-        if (!$user->warga_id && !TenantPermissions::hasAnyRoleOrPermission($user, TenantPermissions::KELUHAN, ['create keluhan', 'edit keluhan'])) {
-            abort(403, 'Akses ditolak.');
-        }
         if (!$user->warga_id) {
             abort(403, 'Anda harus melengkapi data warga Anda terlebih dahulu sebelum melapor.');
         }
@@ -97,7 +94,7 @@ class Form extends Component
         }
 
         $this->dispatch('keluhanSaved');
-        $this->dispatch('close-modal');
+        $this->dispatch('closeModal');
     }
 
     public function render()
