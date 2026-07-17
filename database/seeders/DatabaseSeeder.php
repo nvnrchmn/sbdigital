@@ -24,12 +24,15 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Super Admin',
                 'password' => bcrypt('password'),
                 'email_verified_at' => now(),
-            ]
+            ],
         );
 
+        // Assign Super Admin role
+        if ($admin) {
+            $admin->assignRole($superAdminRole);
+        }
+
         // Panggil seeder lainnya (hanya untuk database sentral)
-        $this->call([
-            PlanSeeder::class,
-        ]);
+        $this->call([PlanSeeder::class]);
     }
 }
